@@ -3,6 +3,7 @@
 
 <div class="page-background">
     <div class="qr-container">
+
         <h3>QR-Code</h3>
 
         <p class="small-note">
@@ -22,6 +23,7 @@
         {
             <span class="error">@Message</span>
         }
+
     </div>
 </div>
 
@@ -29,31 +31,26 @@
     private string? QrCodeImage;
     private string? Message;
 
-    // später aus appsettings.json
-    private const string BaseUrl = "http://0.0.0.0:5432";
+    // Deine IP + Port aus launchSettings
+    private const string BaseUrl = "http://172.17.7.62:5432/vote/";
 
     private void GenerateQrCode()
     {
         try
         {
-            // 1️⃣ Einmaliger Token
             string token = Guid.NewGuid().ToString();
 
-            // 2️⃣ URL für Voting
-            string payload = $"http://0.0.0.0:5432/vote/{token}";
+            // KEIN doppelter Slash
+            string payload = $"{BaseUrl}{token}";
 
-            // 3️⃣ QR-Code erzeugen
             using var generator = new QRCoder.QRCodeGenerator();
             using var data = generator.CreateQrCode(payload, QRCoder.QRCodeGenerator.ECCLevel.Q);
             using var qrCode = new QRCoder.PngByteQRCode(data);
 
             byte[] qrBytes = qrCode.GetGraphic(20);
+
             QrCodeImage = $"data:image/png;base64,{Convert.ToBase64String(qrBytes)}";
-
             Message = null;
-
-            // 🔒 HIER SPÄTER:
-            // Token + Status in DB speichern
         }
         catch (Exception ex)
         {
