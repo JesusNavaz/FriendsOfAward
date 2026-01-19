@@ -1,13 +1,11 @@
-﻿using DocumentFormat.OpenXml.EMMA;
-using MySql.Data.MySqlClient;
-using Mysqlx.Connection;
-using Mysqlx.Crud;
+﻿using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using ZstdSharp.Unsafe;
 
 public class FoA_DA
 {
-    public int ID { get; } //in als NULL übergeben, Auto_Increment via sql
+    public int ID { get; }
     public string Abteilung { get; set; }
     public string Titel { get; set; }
     public string Schueler { get; set; }
@@ -24,61 +22,70 @@ public class FoA_DA
     {
         try
         {
-            DbWrapper.Wrapper.RunNonQuery($"SET FOREIGN_KEY_CHECKS = 0;" +
-                $"TRUNCATE TABLE foa_da;" +
-                $"TRUNCATE TABLE foa_qrcodes;" +
-                $"TRUNCATE TABLE foa_voting_system;" +
-                $"SET FOREIGN_KEY_CHECKS = 1;");
-            CreateClassesSQL();
-            foreach (FoA_DA da in foaDA)
+            DisableForeignKeysAndTruncate();
+            CreateTables();
+
+            foreach (var da in foaDA)
             {
-                string sql = $"INSERT INTO FoA_DA(Abteilung, Titel, Schueler) VALUES('{da.Abteilung}', '{da.Titel}', '{da.Schueler}')";
+                string sql =
+                    $"INSERT INTO FoA_DA (Abteilung, Titel, Schueler) VALUES (" +
+                    $"'{Escape(da.Abteilung)}', '{Escape(da.Titel)}', '{Escape(da.Schueler)}')";
+
                 DbWrapper.Wrapper.RunNonQuery(sql);
             }
+
             return true;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error in SaveDAtoDb: {ex.Message}");
-            Console.WriteLine($"Stack trace: {ex.StackTrace}");
             return false;
         }
     }
 
+    // ---------------- QR-CODES ----------------
+
     public class FoA_QrCodes
     {
-        string QrId { get; set; }
+        public string QrId { get; set; }
+
         public FoA_QrCodes(string qrId)
         {
             QrId = qrId;
         }
-        static bool SaveQRtoDb(List<FoA_QrCodes> qrCodes)
+
+        public static bool SaveQRtoDb(List<FoA_QrCodes> qrCodes)
         {
             try
             {
-                CreateClassesSQL();
-                DbWrapper.Wrapper.RunQueryScalar("SET FOREIGN_KEY_CHECKS = 0;" +
-                    "TRUNCATE TABLE foa_da;TRUNCATE TABLE foa_qrcodes;" +
-                    "TRUNCATE TABLE foa_voting_system;" +
-                    "SET FOREIGN_KEY_CHECKS = 1;");
-                foreach (FoA_QrCodes qrCode in qrCodes)
+                DisableForeignKeysAndTruncate();
+                CreateTables();
+
+                foreach (var qr in qrCodes)
                 {
-                    DbWrapper.Wrapper.RunNonQuery($"INSERT INTO FoA_QrCodes (QrID) VALUES ('{qrCode.QrId}')");
+                    string sql =
+                        $"INSERT INTO FoA_QrCodes (QrID) VALUES ('{Escape(qr.QrId)}')";
+
+                    DbWrapper.Wrapper.RunNonQuery(sql);
                 }
+
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine($"Error in SaveQRtoDb: {ex.Message}");
                 return false;
             }
         }
     }
+
+    // ---------------- VOTING ----------------
+
     public class FoA_Voting_System
     {
-        int VotingId { get; }
-        string QrId { get; }
-        int DaId { get; }
+        public int VotingId { get; }
+        public string QrId { get; }
+        public int DaId { get; }
 
         public FoA_Voting_System(int votingId, string qrId, int daId)
         {
@@ -87,14 +94,27 @@ public class FoA_DA
             DaId = daId;
         }
     }
-    static bool CreateClassesSQL()
+
+    // ---------------- SQL STRUCTURE ----------------
+
+    private static void DisableForeignKeysAndTruncate()
+    {
+        DbWrapper.Wrapper.RunNonQuery(
+            "SET FOREIGN_KEY_CHECKS = 0;" +
+            "TRUNCATE TABLE foa_da;" +
+            "TRUNCATE TABLE foa_qrcodes;" +
+            "TRUNCATE TABLE foa_voting_system;" +
+            "SET FOREIGN_KEY_CHECKS = 1;");
+    }
+
+    private static bool CreateTables()
     {
         try
         {
             DbWrapper.Wrapper.RunNonQuery(
                 "CREATE TABLE IF NOT EXISTS FoA_DA (" +
                 "DaId INT NOT NULL AUTO_INCREMENT, " +
-                "Abteilung VARCHAR(3) NOT NULL, " +  
+                "Abteilung VARCHAR(3) NOT NULL, " +
                 "Titel VARCHAR(100) NOT NULL, " +
                 "Schueler VARCHAR(200) NOT NULL, " +
                 "PRIMARY KEY (DaId))");
@@ -117,22 +137,31 @@ public class FoA_DA
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error in CreateClassesSQL: {ex.Message}");
-            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            Console.WriteLine($"Error in CreateTables: {ex.Message}");
             return false;
         }
     }
 
-    static List<string> UnUsedQrCodes()
-    {
-        List<string> qrIds = new List<string>();
+    // ---------------- HELPERS ----------------
 
-        DataTable table = DbWrapper.Wrapper.RunQuery($"SELECT QrId FROM FoA_QrCodes " +
-            $"WHERE QrId NOT IN (SELECT QrId FROM FoA_Voting_System)");
+    public static List<string> UnUsedQrCodes()
+    {
+        var qrIds = new List<string>();
+
+        DataTable table = DbWrapper.Wrapper.RunQuery(
+            "SELECT QrId FROM FoA_QrCodes " +
+            "WHERE QrId NOT IN (SELECT QrId FROM FoA_Voting_System)");
+
         foreach (DataRow row in table.Rows)
         {
             qrIds.Add(row["QrId"].ToString());
         }
+
         return qrIds;
+    }
+
+    private static string Escape(string input)
+    {
+        return input.Replace("'", "''");
     }
 }
