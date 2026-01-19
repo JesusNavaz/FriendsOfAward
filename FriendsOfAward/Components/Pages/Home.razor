@@ -1,7 +1,129 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager MyNavMgr
 
-<h1>Hello, world!</h1>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-Welcome to your new app.
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <title>Friends of Award</title>
+</head>
+
+<body>
+
+    <h1>Friends of Award</h1>
+    <p class="subtitle">Geben Sie uns Ihre persönlichen Favoriten bekannt!</p>
+
+    <p class="instructions">
+        Einfacher Klick = Favorit ⭐ (max. 5)<br>
+        Doppelklick = Superfavorit ⭐⭐ (max. 1)
+    </p>
+
+    <p class="instructions" style="font-size: 14px;">
+        Diese Abstimmung ist anonym und auf ein Gerät beschränkt.
+    </p>
+
+
+    <div class="vote-grid">
+
+        @for (int i = 1; i <= 20; i++)
+        {
+            <button class="vote-button" data-num="@i">
+                @i
+                <div class="star-container"></div>
+            </button>
+        }
+
+    </div>
+
+    <p class="status-text">
+        Offen: <span id="favCount">0</span> Favoriten,
+        <span id="topCount">0</span> Superfavorit
+    </p>
+
+    <button class="submit-btn">Bewertung absenden</button>
+
+
+    <script>
+        const buttons = document.querySelectorAll(".vote-button");
+        let favCount = 0;
+        let topCount = 0;
+        let topFavoritButton = null;
+
+        buttons.forEach(btn => {
+            let clickTimeout = null;
+
+            btn.addEventListener("click", () => {
+                if (clickTimeout === null) {
+                    clickTimeout = setTimeout(() => {
+                        handleSingleClick(btn);
+                        clickTimeout = null;
+                    }, 200);
+                }
+            });
+
+            btn.addEventListener("dblclick", () => {
+                clearTimeout(clickTimeout);
+                clickTimeout = null;
+                handleDoubleClick(btn);
+            });
+        });
+
+        function handleSingleClick(btn) {
+            if (btn.classList.contains("topfavorit")) return;
+
+            if (btn.classList.contains("favorit")) {
+                btn.classList.remove("favorit");
+                btn.querySelector(".star-container").innerHTML = "";
+                favCount--;
+            } else {
+                if (favCount < 5) {
+                    btn.classList.add("favorit");
+                    btn.querySelector(".star-container").innerHTML =
+                        "<i class='fa-solid fa-star'></i>";
+                    favCount++;
+                }
+            }
+            updateStatus();
+        }
+
+        function handleDoubleClick(btn) {
+            if (btn.classList.contains("topfavorit")) {
+                btn.classList.remove("topfavorit");
+                btn.querySelector(".star-container").innerHTML = "";
+                topCount = 0;
+                topFavoritButton = null;
+                updateStatus();
+                return;
+            }
+
+            if (topFavoritButton) {
+                topFavoritButton.classList.remove("topfavorit");
+                topFavoritButton.querySelector(".star-container").innerHTML = "";
+            }
+
+            btn.classList.add("topfavorit");
+            btn.querySelector(".star-container").innerHTML =
+                "<i class='fa-solid fa-star'></i><i class='fa-solid fa-star'></i>";
+
+            topFavoritButton = btn;
+            topCount = 1;
+
+            if (btn.classList.contains("favorit")) {
+                btn.classList.remove("favorit");
+                favCount--;
+            }
+
+            updateStatus();
+        }
+
+        function updateStatus() {
+            document.getElementById("favCount").textContent = favCount;
+            document.getElementById("topCount").textContent = topCount;
+        }
+    </script>
+</body>
