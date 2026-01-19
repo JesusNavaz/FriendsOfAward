@@ -4,6 +4,8 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager MyNavMgr
 
+<button @onclick="Btn_GoToAdmin">Admin-Login</button>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -127,3 +129,10 @@
         }
     </script>
 </body>
+
+@code {
+    void Btn_GoToAdmin()
+    {
+        MyNavMgr.NavigateTo("/admin");
+    }
+}
