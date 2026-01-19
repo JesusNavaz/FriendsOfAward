@@ -40,7 +40,7 @@
             string token = Guid.NewGuid().ToString();
 
             // 2️⃣ URL für Voting
-            string payload = $"{BaseUrl}{token}";
+            string payload = $"http://0.0.0.0:5432/vote/{token}";
 
             // 3️⃣ QR-Code erzeugen
             using var generator = new QRCoder.QRCodeGenerator();
