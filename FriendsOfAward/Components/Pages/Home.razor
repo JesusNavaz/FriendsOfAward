@@ -1,54 +1,98 @@
 ﻿@page "/vote/{token}"
 @rendermode InteractiveServer
 
-@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
 @inject NavigationManager MyNavMgr
+@inject IJSRuntime JS
 
-<button @onclick="Btn_GoToAdmin">Admin-Login</button>
+<button type="button" @onclick="Btn_GoToAdmin">Admin-Login</button>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<h1>Friends of Award</h1>
+<p class="subtitle">Geben Sie uns Ihre persönlichen Favoriten bekannt!</p>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<p class="instructions">
+    Einfacher Klick = Favorit ⭐ (max. 5)<br>
+    Doppelklick = Superfavorit ⭐⭐ (max. 1)
+</p>
 
-    <title>Friends of Award</title>
-</head>
+<p class="instructions" style="font-size: 14px;">
+    Diese Abstimmung ist anonym und auf ein Gerät beschränkt.
+</p>
 
-<body>
+<div class="vote-grid">
+    @for (int i = 1; i <= 20; i++)
+    {
+        <button type="button" class="vote-button" data-num="@i">
+            @i
+            <div class="star-container"></div>
+        </button>
+    }
+</div>
 
-    <h1>Friends of Award</h1>
-    <p class="subtitle">Geben Sie uns Ihre persönlichen Favoriten bekannt!</p>
+<p class="status-text">
+    Offen: <span id="favCount">0</span> Favoriten,
+    <span id="topCount">0</span> Superfavorit
+</p>
 
-    <p class="instructions">
-        Einfacher Klick = Favorit ⭐ (max. 5)<br>
-        Doppelklick = Superfavorit ⭐⭐ (max. 1)
-    </p>
+<button type="button" class="submit-btn" onclick="sendVotesToBlazor()">Bewertung absenden</button>
 
-    <p class="instructions" style="font-size: 14px;">
-        Diese Abstimmung ist anonym und auf ein Gerät beschränkt.
-    </p>
+@code {
+    public static Home Instance { get; private set; }
 
-    <div class="vote-grid">
+    [Parameter]
+    public string? token { get; set; }
 
-        @for (int i = 1; i <= 20; i++)
+    public List<int> Favoriten = new();
+    public int? Superfavorit = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            <button class="vote-button" data-num="@i">
-                @i
-                <div class="star-container"></div>
-            </button>
+            Instance = this;
+            await JS.InvokeVoidAsync("initVoteButtons");
+        }
+    }
+
+    void Btn_GoToAdmin()
+    {
+        MyNavMgr.NavigateTo("/admin");
+    }
+
+    [JSInvokable]
+    public static Task ReceiveVotes(List<int> favs, int? superFav)
+    {
+        Instance.Favoriten = favs;
+        Instance.Superfavorit = superFav;
+
+        Instance.SubmitVoting();
+        Instance.MyNavMgr.NavigateTo($"/summary/{Instance.token}");
+
+        return Task.CompletedTask;
+    }
+
+    public void SubmitVoting()
+    {
+        foreach (var fav in Favoriten)
+        {
+            string sql =
+                $"INSERT INTO FoA_Voting_System (QrId, DaId) VALUES ('{token}', {fav})";
+            DbWrapper.Wrapper.RunNonQuery(sql);
         }
 
-    </div>
+        if (Superfavorit.HasValue)
+        {
+            string sql =
+                $"INSERT INTO FoA_Voting_System (QrId, DaId) VALUES ('{token}', {Superfavorit.Value})";
+            DbWrapper.Wrapper.RunNonQuery(sql);
+        }
+    }
+}
 
-    <p class="status-text">
-        Offen: <span id="favCount">0</span> Favoriten,
-        <span id="topCount">0</span> Superfavorit
-    </p>
 
-    <button class="submit-btn">Bewertung absenden</button>
+<script>
+    function initVoteButtons() {
 
-    <script>
         const buttons = document.querySelectorAll(".vote-button");
         let favCount = 0;
         let topCount = 0;
@@ -125,57 +169,22 @@
             document.getElementById("favCount").textContent = favCount;
             document.getElementById("topCount").textContent = topCount;
         }
-    </script>
-</body>
 
-@code {
-    [Parameter]
-    public string? token { get; set; }
+        window.sendVotesToBlazor = function () {
+            const favs = [];
+            let superFav = null;
 
-    private List<int> Favoriten = new();
-    private int? Superfavorit = null;
-    private string? Message;
+            document.querySelectorAll(".vote-button").forEach(btn => {
+                const id = parseInt(btn.getAttribute("data-num"));
 
-    void Btn_GoToAdmin()
-    {
-        MyNavMgr.NavigateTo("/admin");
-    }
+                if (btn.classList.contains("favorit"))
+                    favs.push(id);
 
-    private void SubmitVoting()
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(token))
-            {
-                Message = "Ungültiger Token.";
-                return;
-            }
+                if (btn.classList.contains("topfavorit"))
+                    superFav = id;
+            });
 
-            var votes = new List<FoA_DA.FoA_Voting_System>();
-
-            foreach (var fav in Favoriten)
-            {
-                votes.Add(new FoA_DA.FoA_Voting_System(0, token, fav));
-            }
-
-            if (Superfavorit.HasValue)
-            {
-                votes.Add(new FoA_DA.FoA_Voting_System(0, token, Superfavorit.Value));
-            }
-
-            foreach (var vote in votes)
-            {
-                string sql =
-                    $"INSERT INTO FoA_Voting_System (QrId, DaId) VALUES ('{vote.QrId}', {vote.DaId})";
-
-                DbWrapper.Wrapper.RunNonQuery(sql);
-            }
-
-            Message = "Bewertung erfolgreich gespeichert!";
-        }
-        catch (Exception ex)
-        {
-            Message = $"Fehler beim Speichern: {ex.Message}";
+            DotNet.invokeMethodAsync("FriendsOfAward", "ReceiveVotes", favs, superFav);
         }
     }
-}
+</script>
