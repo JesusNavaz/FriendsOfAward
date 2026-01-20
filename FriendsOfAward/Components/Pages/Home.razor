@@ -129,12 +129,53 @@
 </body>
 
 @code {
-    // 🔥 DAS HAT DIR GEFELT – OHNE DAS CRASHT DIE SEITE
     [Parameter]
     public string? token { get; set; }
+
+    private List<int> Favoriten = new();
+    private int? Superfavorit = null;
+    private string? Message;
 
     void Btn_GoToAdmin()
     {
         MyNavMgr.NavigateTo("/admin");
+    }
+
+    private void SubmitVoting()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                Message = "Ungültiger Token.";
+                return;
+            }
+
+            var votes = new List<FoA_DA.FoA_Voting_System>();
+
+            foreach (var fav in Favoriten)
+            {
+                votes.Add(new FoA_DA.FoA_Voting_System(0, token, fav));
+            }
+
+            if (Superfavorit.HasValue)
+            {
+                votes.Add(new FoA_DA.FoA_Voting_System(0, token, Superfavorit.Value));
+            }
+
+            foreach (var vote in votes)
+            {
+                string sql =
+                    $"INSERT INTO FoA_Voting_System (QrId, DaId) VALUES ('{vote.QrId}', {vote.DaId})";
+
+                DbWrapper.Wrapper.RunNonQuery(sql);
+            }
+
+            Message = "Bewertung erfolgreich gespeichert!";
+        }
+        catch (Exception ex)
+        {
+            Message = $"Fehler beim Speichern: {ex.Message}";
+        }
     }
 }

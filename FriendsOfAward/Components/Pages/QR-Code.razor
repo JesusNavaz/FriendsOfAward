@@ -31,25 +31,26 @@
     private string? QrCodeImage;
     private string? Message;
 
-    // Deine IP + Port aus launchSettings
-    private const string BaseUrl = "http://172.17.7.62:5432/vote/";
+    private const string BaseUrl = "http://172.17.10.92:5432/vote/";
 
     private void GenerateQrCode()
     {
         try
         {
-            string token = Guid.NewGuid().ToString();
-
-            // KEIN doppelter Slash
-            string payload = $"{BaseUrl}{token}";
+            Guid token = Guid.NewGuid();
+            string payload = $"{BaseUrl.TrimEnd('/')}/{token}";
 
             using var generator = new QRCoder.QRCodeGenerator();
             using var data = generator.CreateQrCode(payload, QRCoder.QRCodeGenerator.ECCLevel.Q);
             using var qrCode = new QRCoder.PngByteQRCode(data);
 
             byte[] qrBytes = qrCode.GetGraphic(20);
-
             QrCodeImage = $"data:image/png;base64,{Convert.ToBase64String(qrBytes)}";
+
+            // In Datenbank speichern
+            var qrCodeEntry = new FoA_DA.FoA_QrCodes(token.ToString().Substring(0, 8));
+            FoA_DA.FoA_QrCodes.SaveQRtoDb(new List<FoA_DA.FoA_QrCodes> { qrCodeEntry });
+
             Message = null;
         }
         catch (Exception ex)
