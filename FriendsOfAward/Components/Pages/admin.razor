@@ -1,6 +1,4 @@
-﻿
-
-@page "/Admin"
+﻿@page "/Admin"
 @rendermode InteractiveServer
 @inject NavigationManager Nav
 
@@ -43,8 +41,8 @@
 </div>
 
 @code {
-    private string adminCode;
-    private string error;
+    private string? adminCode;
+    private string? error;
     private bool IsAdmin = false;
 
     private void LoginAdmin()
