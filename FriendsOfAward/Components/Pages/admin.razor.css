@@ -1,18 +1,15 @@
-﻿/* Container */
-.admin-container {
+﻿.admin-container {
     max-width: 420px;
     margin: 60px auto;
     text-align: center;
 }
 
-/* Titel */
 .admin-title {
     font-size: 36px;
     font-weight: 800;
     margin-bottom: 25px;
 }
 
-/* Card */
 .admin-card {
     background: #ffffff;
     padding: 25px 30px;
@@ -20,7 +17,6 @@
     box-shadow: 0 4px 14px rgba(0,0,0,0.12);
 }
 
-/* Input */
 .admin-input {
     width: 100%;
     padding: 10px 12px;
@@ -38,7 +34,6 @@
         outline: none;
     }
 
-/* Buttons */
 .admin-btn {
     width: 100%;
     padding: 12px;
@@ -70,18 +65,14 @@
         transform: scale(1.03);
     }
 
-/* Error */
 .admin-error {
     color: #e53935;
     font-weight: 600;
     margin-bottom: 10px;
 }
 
-/* Info */
 .admin-info {
     margin-bottom: 15px;
     font-size: 16px;
     color: #444;
 }
-
-

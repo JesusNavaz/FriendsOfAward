@@ -18,12 +18,13 @@ public class FoA_DA
         Schueler = schueler;
     }
 
+    // ---------------- SAVE DA ----------------
+
     public static bool SaveDAtoDb(List<FoA_DA> foaDA)
     {
         try
         {
-            DisableForeignKeysAndTruncate();
-            CreateTables();
+            CreateTables(); // NICHT MEHR TRUNCATE!
 
             foreach (var da in foaDA)
             {
@@ -58,13 +59,12 @@ public class FoA_DA
         {
             try
             {
-                DisableForeignKeysAndTruncate();
-                CreateTables();
+                CreateTables(); // NICHT MEHR TRUNCATE!
 
                 foreach (var qr in qrCodes)
                 {
                     string sql =
-                        $"INSERT INTO FoA_QrCodes (QrID) VALUES ('{Escape(qr.QrId)}')";
+                        $"INSERT INTO FoA_QrCodes (QrId) VALUES ('{Escape(qr.QrId)}')";
 
                     DbWrapper.Wrapper.RunNonQuery(sql);
                 }
@@ -97,20 +97,11 @@ public class FoA_DA
 
     // ---------------- SQL STRUCTURE ----------------
 
-    private static void DisableForeignKeysAndTruncate()
-    {
-        DbWrapper.Wrapper.RunNonQuery(
-            "SET FOREIGN_KEY_CHECKS = 0;" +
-            "TRUNCATE TABLE foa_da;" +
-            "TRUNCATE TABLE foa_qrcodes;" +
-            "TRUNCATE TABLE foa_voting_system;" +
-            "SET FOREIGN_KEY_CHECKS = 1;");
-    }
-
-    private static bool CreateTables()
+    public static bool CreateTables()
     {
         try
         {
+            // DA TABLE
             DbWrapper.Wrapper.RunNonQuery(
                 "CREATE TABLE IF NOT EXISTS FoA_DA (" +
                 "DaId INT NOT NULL AUTO_INCREMENT, " +
@@ -119,15 +110,17 @@ public class FoA_DA
                 "Schueler VARCHAR(200) NOT NULL, " +
                 "PRIMARY KEY (DaId))");
 
+            // QR TABLE (64 chars!)
             DbWrapper.Wrapper.RunNonQuery(
                 "CREATE TABLE IF NOT EXISTS FoA_QrCodes (" +
-                "QrID VARCHAR(8) NOT NULL, " +
-                "PRIMARY KEY(QrID))");
+                "QrId VARCHAR(64) NOT NULL, " +
+                "PRIMARY KEY(QrId))");
 
+            // VOTING TABLE (matching QrId)
             DbWrapper.Wrapper.RunNonQuery(
                 "CREATE TABLE IF NOT EXISTS FoA_Voting_System (" +
                 "VotingId INT NOT NULL AUTO_INCREMENT, " +
-                "QrId VARCHAR(8) NOT NULL, " +
+                "QrId VARCHAR(64) NOT NULL, " +
                 "DaId INT NOT NULL, " +
                 "PRIMARY KEY (VotingId), " +
                 "FOREIGN KEY (QrId) REFERENCES FoA_QrCodes (QrId) ON DELETE CASCADE, " +

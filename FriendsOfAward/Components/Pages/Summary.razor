@@ -1,0 +1,61 @@
+﻿@using System.Data
+
+@page "/summary/{token}"
+@rendermode InteractiveServer
+@inject NavigationManager MyNavMgr
+
+<h1>Danke für Ihre Bewertung!</h1>
+
+<p class="subtitle">
+    Ihre Auswahl wurde erfolgreich gespeichert.
+</p>
+
+@if (Votes == null)
+{
+    <p>Lade Daten...</p>
+}
+else
+{
+    <div class="summary-box">
+        <h3>Ihre Auswahl:</h3>
+
+        <ul>
+            @foreach (var v in Votes)
+            {
+                <li>
+                    Diplomarbeit @v.DaId
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+<button class="back-btn" @onclick="GoHome">Zur Startseite</button>
+
+@code {
+    [Parameter] public string? token { get; set; }
+
+    public List<FoA_DA.FoA_Voting_System>? Votes;
+
+    protected override void OnInitialized()
+    {
+        if (string.IsNullOrEmpty(token))
+            return;
+
+        var table = DbWrapper.Wrapper.RunQuery(
+            $"SELECT DaId FROM FoA_Voting_System WHERE QrId = '{token}'");
+
+        Votes = new();
+
+        foreach (DataRow row in table.Rows)
+        {
+            int daId = Convert.ToInt32(row["DaId"]);
+            Votes.Add(new FoA_DA.FoA_Voting_System(0, token, daId));
+        }
+    }
+
+    void GoHome()
+    {
+        MyNavMgr.NavigateTo("/");
+    }
+}
