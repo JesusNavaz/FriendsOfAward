@@ -1,0 +1,98 @@
+﻿
+/* Gesamt-Hintergrund */
+.page-background {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f7;
+    padding: 1rem;
+}
+
+/* QR Container  */
+.qr-container {
+    background-color: #ffffff;
+    padding: 2.5rem 3rem;
+    border-radius: 22px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    max-width: 360px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+    /* Überschrift */
+    .qr-container h3 {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-weight: 600;
+        color: #1c1c1e;
+        margin: 0;
+    }
+
+/* Hinweistext */
+.small-note {
+    font-size: 0.95rem;
+    color: #6e6e73;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* QR-Code Bild */
+.qr-image {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* Button */
+.qr-button {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 0.65rem 1.5rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    transition: background 0.25s ease, transform 0.2s ease;
+}
+
+    .qr-button:hover {
+        background-color: #0051a8;
+        transform: scale(1.03);
+    }
+
+/* Fehlermeldung */
+.error {
+    color: #ff3b30;
+    font-size: 0.9rem;
+}
+
+/* Optional: sanftes Hover-Scaling für Container */
+.qr-container:hover {
+    transform: scale(1.01);
+    transition: transform 0.25s ease;
+}
+
+/* Mobile Anpassung */
+@media (max-width: 480px) {
+    .qr-container {
+        padding: 2rem;
+    }
+
+    .qr-image {
+        width: 150px;
+        height: 150px;
+    }
+
+    .qr-button {
+        width: 100%;
+        text-align: center;
+    }
+}
