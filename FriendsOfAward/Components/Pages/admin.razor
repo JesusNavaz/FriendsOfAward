@@ -1,13 +1,19 @@
-﻿@page "/Admin"
+﻿
+
+@page "/Admin"
+@rendermode InteractiveServer
 @inject NavigationManager Nav
 
 <div class="admin-container">
+
     <h1 class="admin-title">Adminbereich</h1>
 
     @if (!IsAdmin)
     {
         <div class="admin-card">
+
             <h3>🔑 Login</h3>
+
             <label for="adminInput">Admin-Code</label>
             <input id="adminInput" type="password" class="admin-input" @bind="adminCode" />
 
@@ -16,7 +22,9 @@
                 <p class="admin-error">@error</p>
             }
 
-            <button class="admin-btn admin-login" @onclick="LoginAdmin">Login</button>
+            <button class="admin-btn admin-login" @onclick="LoginAdmin">
+                Login
+            </button>
         </div>
     }
     else
@@ -24,19 +32,14 @@
         <div class="admin-card">
             <h3>🔐 Admin-Panel</h3>
 
-            <p class="admin-info">QR-Code für Umfrage:</p>
+            <p class="admin-info">Du bist eingeloggt.</p>
 
-            <div class="qr-wrapper">
-                <div class="qr-card">
-                    <!-- Beispiel: QR als Bild -->
-                    <img src="qrcode.png" alt="QR Code" />
-                </div>
-            </div>
-            <div class="qr-text">Scanne den QR-Code, um zur Umfrage zu gelangen</div>
-
-            <button class="admin-btn admin-logout" @onclick="LogoutAdmin">Logout</button>
+            <button class="admin-btn admin-logout" @onclick="LogoutAdmin">
+                Logout
+            </button>
         </div>
     }
+
 </div>
 
 @code {
