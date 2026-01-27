@@ -12,18 +12,18 @@
 
             <h3>Login</h3>
 
-            <label for="adminInput">adminEmail</label>
-            <input id="adminInput" type="password" class="admin-input" @bind="adminEmail" />
+            <label for="emailInput">E-Mail</label>
+            <input id="emailInput" type="text" class="admin-input" @bind="adminEmail" />
 
-            <label for="adminPasswordHash">adminEmail</label>
-            <input id="adminInput" type="password" class="admin-input" @bind="adminPasswordHash" />
+            <label for="passwordInput">Passwort</label>
+            <input id="passwordInput" type="password" class="admin-input" @bind="adminPassword" />
 
             @if (!string.IsNullOrEmpty(error))
             {
                 <p class="admin-error">@error</p>
             }
 
-            <button class="admin-btn admin-login" @onclick="LoginAdmin">
+            <button class="admin-btn admin-login" @onclick="Btn_LoginAdmin">
                 Login
             </button>
         </div>
@@ -33,9 +33,9 @@
         <div class="admin-card">
             <h3>Admin-Panel</h3>
 
-            <p class="admin-info">Du bist eingeloggt.</p>
+            <p class="admin-info">Du bist eingeloggt als @adminEmail</p>
 
-            <button class="admin-btn admin-logout" @onclick="LogoutAdmin">
+            <button class="admin-btn admin-logout" @onclick="Btn_LogoutAdmin">
                 Logout
             </button>
         </div>
@@ -43,29 +43,29 @@
 </div>
 
 @code {
-    private string adminEmail;
-    private string adminPasswordHash;
-
-    private string error;
+    private string adminEmail = "";
+    private string adminPassword = "";
+    private string error = "";
     private bool IsAdmin = false;
 
-    private void LoginAdmin()
+    private void Btn_LoginAdmin()
     {
-        if (adminEmail == "1234@gmail.com" && adminPasswordHash == "abc123")
+        if (adminEmail == "admin@htlvb.at" && adminPassword == "Passw0rd")
         {
             IsAdmin = true;
-            error = null;
+            error = "";
         }
         else
         {
-            error = "Falscher Admin-Code";
+            error = "Falsche E-Mail oder Passwort!";
         }
     }
 
-
-    private void LogoutAdmin()
+    private void Btn_LogoutAdmin()
     {
         IsAdmin = false;
+        adminEmail = "";
+        adminPassword = "";
         Nav.NavigateTo("/");
     }
 }

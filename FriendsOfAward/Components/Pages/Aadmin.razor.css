@@ -11,26 +11,34 @@
 }
 
 .admin-card {
-    background: #ffffff;
+    background: white;
     padding: 25px 30px;
     border-radius: 12px;
     box-shadow: 0 4px 14px rgba(0,0,0,0.12);
 }
 
+    .admin-card h3 {
+        margin-bottom: 20px;
+    }
+
+    .admin-card label {
+        display: block;
+        text-align: left;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
 .admin-input {
     width: 100%;
     padding: 10px 12px;
-    margin-top: 8px;
     margin-bottom: 15px;
     border-radius: 8px;
     border: 1px solid #ccc;
     font-size: 16px;
-    transition: 0.2s;
 }
 
     .admin-input:focus {
         border-color: #1e88e5;
-        box-shadow: 0 0 6px rgba(30,136,229,0.4);
         outline: none;
     }
 
@@ -42,7 +50,7 @@
     font-size: 17px;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.2s;
+    margin-top: 10px;
 }
 
 .admin-login {
@@ -52,7 +60,6 @@
 
     .admin-login:hover {
         background-color: #27ae60;
-        transform: scale(1.03);
     }
 
 .admin-logout {
@@ -62,7 +69,6 @@
 
     .admin-logout:hover {
         background-color: #c62828;
-        transform: scale(1.03);
     }
 
 .admin-error {
