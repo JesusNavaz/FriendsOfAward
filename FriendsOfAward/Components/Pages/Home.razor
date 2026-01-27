@@ -1,6 +1,7 @@
 ﻿@page "/vote/{token}"
 @rendermode InteractiveServer
 
+@using ClassLibrary
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager MyNavMgr
 
@@ -151,22 +152,22 @@
                 return;
             }
 
-            var votes = new List<FoA_DA.FoA_Voting_System>();
+            var votes = new List<Voting>();
 
             foreach (var fav in Favoriten)
             {
-                votes.Add(new FoA_DA.FoA_Voting_System(0, token, fav));
+                votes.Add(new Voting(0, token, fav));
             }
 
             if (Superfavorit.HasValue)
             {
-                votes.Add(new FoA_DA.FoA_Voting_System(0, token, Superfavorit.Value));
+                votes.Add(new Voting(0, token, Superfavorit.Value));
             }
 
             foreach (var vote in votes)
             {
                 string sql =
-                    $"INSERT INTO FoA_Voting_System (QrId, DaId) VALUES ('{vote.QrId}', {vote.DaId})";
+                    $"INSERT INTO Voting (QrId, DaId) VALUES ('{vote.QrId}', {vote.DaId})";
 
                 DbWrapper.Wrapper.RunNonQuery(sql);
             }
