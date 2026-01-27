@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using ClassLibrary
 @rendermode InteractiveServer
 
 <div class="page-background">
@@ -52,8 +53,8 @@
             QrCodeImage = $"data:image/png;base64,{Convert.ToBase64String(qrBytes)}";
 
             // In Datenbank speichern
-            var qrCodeEntry = new FoA_DA.FoA_QrCodes(token.ToString().Substring(0, 8));
-            FoA_DA.FoA_QrCodes.SaveQRtoDb(new List<FoA_DA.FoA_QrCodes> { qrCodeEntry });
+            var qrCodeEntry = new QrCode(token.ToString().Substring(0, 8));
+            QrCode.SaveQRtoDb(new List<QrCode> { qrCodeEntry });
 
             Message = null;
         }

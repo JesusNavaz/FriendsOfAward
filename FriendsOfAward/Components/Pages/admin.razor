@@ -10,10 +10,13 @@
     {
         <div class="admin-card">
 
-            <h3>🔑 Login</h3>
+            <h3>Login</h3>
 
-            <label for="adminInput">Admin-Code</label>
-            <input id="adminInput" type="password" class="admin-input" @bind="adminCode" />
+            <label for="adminInput">adminEmail</label>
+            <input id="adminInput" type="password" class="admin-input" @bind="adminEmail" />
+
+            <label for="adminPasswordHash">adminEmail</label>
+            <input id="adminInput" type="password" class="admin-input" @bind="adminPasswordHash" />
 
             @if (!string.IsNullOrEmpty(error))
             {
@@ -28,7 +31,7 @@
     else
     {
         <div class="admin-card">
-            <h3>🔐 Admin-Panel</h3>
+            <h3>Admin-Panel</h3>
 
             <p class="admin-info">Du bist eingeloggt.</p>
 
@@ -37,17 +40,18 @@
             </button>
         </div>
     }
-
 </div>
 
 @code {
-    private string? adminCode;
-    private string? error;
+    private string adminEmail;
+    private string adminPasswordHash;
+
+    private string error;
     private bool IsAdmin = false;
 
     private void LoginAdmin()
     {
-        if (adminCode == "1234")
+        if (adminEmail == "1234@gmail.com" && adminPasswordHash == "abc123")
         {
             IsAdmin = true;
             error = null;
@@ -57,6 +61,7 @@
             error = "Falscher Admin-Code";
         }
     }
+
 
     private void LogoutAdmin()
     {
