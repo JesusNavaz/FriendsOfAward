@@ -1,6 +1,7 @@
 ﻿@page "/Admin"
 @rendermode InteractiveServer
 @inject NavigationManager Nav
+@using Microsoft.AspNetCore.Identity
 
 <div class="admin-container">
 
@@ -12,11 +13,11 @@
 
             <h3>Login</h3>
 
-            <label for="adminInput">adminEmail</label>
-            <input id="adminInput" type="password" class="admin-input" @bind="adminEmail" />
+            <label for="adminEmail">E-Mail</label>
+            <input id="adminEmail" type="email" class="admin-input" @bind="adminEmail" />
 
-            <label for="adminPasswordHash">adminEmail</label>
-            <input id="adminInput" type="password" class="admin-input" @bind="adminPasswordHash" />
+            <label for="adminPassword">Passwort</label>
+            <input id="adminPassword" type="password" class="admin-input" @bind="adminPassword" />
 
             @if (!string.IsNullOrEmpty(error))
             {
@@ -43,25 +44,44 @@
 </div>
 
 @code {
+    private const string storedAdminEmail = "1234@gmail.com";
+
+    private static readonly PasswordHasher<string> passwordHasher = new();
+
+    // Passwort = abc123 (nur Demo, Hash wird automatisch gesalzen)
+    private static readonly string storedAdminPasswordHash =
+        passwordHasher.HashPassword(storedAdminEmail, "abc123");
+
     private string adminEmail;
-    private string adminPasswordHash;
+    private string adminPassword;
 
     private string error;
     private bool IsAdmin = false;
 
     private void LoginAdmin()
     {
-        if (adminEmail == "1234@gmail.com" && adminPasswordHash == "abc123")
+        if (adminEmail != storedAdminEmail)
+        {
+            error = "Unbekannter Admin";
+            return;
+        }
+
+        var result = passwordHasher.VerifyHashedPassword(
+            storedAdminEmail,
+            storedAdminPasswordHash,
+            adminPassword ?? ""
+        );
+
+        if (result == PasswordVerificationResult.Success)
         {
             IsAdmin = true;
             error = null;
         }
         else
         {
-            error = "Falscher Admin-Code";
+            error = "Falsches Passwort";
         }
     }
-
 
     private void LogoutAdmin()
     {
