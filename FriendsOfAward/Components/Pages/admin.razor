@@ -1,6 +1,4 @@
-﻿
-
-@page "/Admin"
+﻿@page "/Admin"
 @rendermode InteractiveServer
 @inject NavigationManager Nav
 
@@ -12,7 +10,7 @@
     {
         <div class="admin-card">
 
-            <h3>🔑 Login</h3>
+            <h3>Login</h3>
 
             <label for="adminInput">Admin-Code</label>
             <input id="adminInput" type="password" class="admin-input" @bind="adminCode" />
@@ -30,7 +28,7 @@
     else
     {
         <div class="admin-card">
-            <h3>🔐 Admin-Panel</h3>
+            <h3>Admin-Panel</h3>
 
             <p class="admin-info">Du bist eingeloggt.</p>
 
@@ -43,13 +41,15 @@
 </div>
 
 @code {
-    private string adminCode;
+    private string adminEmail;
+    private string adminPasswordHash;
+
     private string error;
     private bool IsAdmin = false;
 
     private void LoginAdmin()
     {
-        if (adminCode == "1234")
+        if (adminEmail == "1234@gmail.com" && adminPasswordHash == "abc123")
         {
             IsAdmin = true;
             error = null;
