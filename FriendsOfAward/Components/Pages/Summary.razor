@@ -1,6 +1,6 @@
-﻿@using System.Data
-
-@page "/summary/{token}"
+﻿@page "/summary/{token}"
+@using System.Data
+@using ClassLibrary
 @rendermode InteractiveServer
 @inject NavigationManager MyNavMgr
 
@@ -35,7 +35,7 @@ else
 @code {
     [Parameter] public string? token { get; set; }
 
-    public List<FoA_DA.FoA_Voting_System>? Votes;
+    public List<Voting>? Votes;
 
     protected override void OnInitialized()
     {
@@ -50,7 +50,7 @@ else
         foreach (DataRow row in table.Rows)
         {
             int daId = Convert.ToInt32(row["DaId"]);
-            Votes.Add(new FoA_DA.FoA_Voting_System(0, token, daId));
+            Votes.Add(new Voting(0, token, daId));
         }
     }
 
