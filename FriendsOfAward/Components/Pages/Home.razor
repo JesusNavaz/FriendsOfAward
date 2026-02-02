@@ -146,31 +146,58 @@
     {
         try
         {
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrWhiteSpace(token))
             {
                 Message = "Ungültiger Token.";
                 return;
             }
 
-            var votes = new List<Voting>();
+            string tokenSafe = token.Replace("'", "''");
 
-            foreach (var fav in Favoriten)
+            string sqlGetQr =
+                $"SELECT id FROM foa_qrcodes WHERE token = '{tokenSafe}' AND is_used = 0 LIMIT 1";
+
+            var dt = DbWrapperMySqlV2.Wrapper.RunQuery(sqlGetQr); 
+            if (dt == null || dt.Rows.Count == 0)
             {
-                votes.Add(new Voting(0, token, fav));
+                Message = "Token ungültig oder bereits verwendet.";
+                return;
+            }
+
+            int qrId = Convert.ToInt32(dt.Rows[0]["id"]);
+
+            if (Favoriten.Count > 5)
+            {
+                Message = "Maximal 5 Favoriten erlaubt.";
+                return;
+            }
+
+            if (Superfavorit.HasValue && Favoriten.Contains(Superfavorit.Value))
+            {
+                Message = "Superfavorit darf nicht zusätzlich als Favorit gesetzt sein.";
+                return;
+            }
+
+            foreach (var daId in Favoriten)
+            {
+                string sqlInsert =
+                    $"INSERT INTO Voting (QrId, DaId, IsSuper) VALUES ({qrId}, {daId}, 0)";
+
+                DbWrapperMySqlV2.Wrapper.RunNonQuery(sqlInsert);
             }
 
             if (Superfavorit.HasValue)
             {
-                votes.Add(new Voting(0, token, Superfavorit.Value));
+                string sqlInsertSuper =
+                    $"INSERT INTO Voting (QrId, DaId, IsSuper) VALUES ({qrId}, {Superfavorit.Value}, 1)";
+
+                DbWrapperMySqlV2.Wrapper.RunNonQuery(sqlInsertSuper);
             }
 
-            foreach (var vote in votes)
-            {
-                string sql =
-                    $"INSERT INTO Voting (QrId, DaId) VALUES ('{vote.QrId}', {vote.DaId})";
+            string sqlLock =
+                $"UPDATE foa_qrcodes SET is_used = 1 WHERE id = {qrId} AND is_used = 0";
 
-                DbWrapper.Wrapper.RunNonQuery(sql);
-            }
+            DbWrapperMySqlV2.Wrapper.RunNonQuery(sqlLock);
 
             Message = "Bewertung erfolgreich gespeichert!";
         }
