@@ -1,0 +1,52 @@
+﻿@page "/AdminDashboard"
+@rendermode InteractiveServer
+
+<h3>AdminDashboard</h3>
+
+<p>Willkommen im Admin Dashboard</p>
+
+<hr />
+
+<h4>Verwaltung</h4>
+<p><NavLink href="/QR-Code">QR-Code Erstellen</NavLink></p>
+<p><NavLink href="/Voting">Abstimmung verwalten</NavLink></p>
+<p><NavLink href="/Ergebnisse">Ergebnisse anzeigen</NavLink></p>
+
+<hr />
+
+<h4>Schnellaktionen</h4>
+<p>
+    <button type="button" @onclick="Btn_StartVoting">Abstimmung starten</button>
+    <button type="button" @onclick="Btn_StopVoting">Abstimmung beenden</button>
+</p>
+<p>Status: @statusMessage</p>
+
+<hr />
+
+<h4>Statistik</h4>
+<p>Anzahl Teilnehmer: @anzahlTeilnehmer</p>
+<p>Anzahl Stimmen: @anzahlStimmen</p>
+
+@code
+{
+    private string statusMessage = "Keine Abstimmung aktiv";
+    private int anzahlTeilnehmer = 0;
+    private int anzahlStimmen = 0;
+
+    protected override void OnInitialized()
+    {
+        // Später aus DB laden
+        anzahlTeilnehmer = 42;
+        anzahlStimmen = 128;
+    }
+
+    private void Btn_StartVoting()
+    {
+        statusMessage = "Abstimmung läuft...";
+    }
+
+    private void Btn_StopVoting()
+    {
+        statusMessage = "Abstimmung beendet";
+    }
+}
