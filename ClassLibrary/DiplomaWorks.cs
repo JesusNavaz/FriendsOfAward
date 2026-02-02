@@ -5,11 +5,11 @@ using System.Data;
 
 public class DiplomaWorks
 {
-    public int Id { get; set; }                 
-    public int WorkNo { get; set; }             
-    public string DepartmentCode { get; set; }  
-    public string Title { get; set; }           
-    public string Authors { get; set; }         
+    public int Id { get; set; }                 // DB id (AUTO_INCREMENT)
+    public int WorkNo { get; set; }             // Nr (1..20)
+    public string DepartmentCode { get; set; }  // MB, ME, ...
+    public string Title { get; set; }           // Titel
+    public string Authors { get; set; }         // Autor:innen
 
     public DiplomaWorks(int workNo, string departmentCode, string title, string authors)
     {
@@ -19,13 +19,21 @@ public class DiplomaWorks
         Authors = authors;
     }
 
+    public static void ReplaceAllInDb(List<DiplomaWorks> daList)
+    {
+        // Vorgabe im Pflichtenheft: kompletter Ersatz
+        DbWrapperMySqlV2.Wrapper.RunNonQuery("TRUNCATE TABLE foa_diplomaworks");
+        DbWrapperMySqlV2.Wrapper.RunNonQuery("TRUNCATE TABLE foa_diplomascores");
+
+        SaveDAtoDb(daList);
+    }
+
     public static bool SaveDAtoDb(List<DiplomaWorks> daList)
     {
         try
         {
             foreach (var da in daList)
             {
-                // Minimal-Escaping für '
                 string depSafe = (da.DepartmentCode ?? "").Replace("'", "''");
                 string titleSafe = (da.Title ?? "").Replace("'", "''");
                 string authorsSafe = (da.Authors ?? "").Replace("'", "''");

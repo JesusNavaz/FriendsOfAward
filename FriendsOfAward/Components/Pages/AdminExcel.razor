@@ -1,0 +1,71 @@
+﻿@page "/admin/excel"
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Components.Forms
+@inject IJSRuntime JS
+
+<h3>Admin: Excel Import/Export</h3>
+
+<p>@Message</p>
+
+<h4>Import Diplomarbeiten (ersetzt DB)</h4>
+<InputFile OnChange="OnFileSelected" accept=".xlsx" />
+<button @onclick="ImportExcel" disabled="@(!CanImport)">Import starten</button>
+
+<hr />
+
+<h4>Export Auswertung</h4>
+<button @onclick="ExportExcel">Excel herunterladen</button>
+
+@code {
+    private IBrowserFile? SelectedFile;
+    private bool CanImport => SelectedFile != null;
+    private string? Message;
+
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        SelectedFile = e.File;
+        Message = $"Ausgewählt: {SelectedFile.Name}";
+    }
+
+    private async Task ImportExcel()
+    {
+        try
+        {
+            if (SelectedFile == null)
+            {
+                Message = "Bitte Datei auswählen.";
+                return;
+            }
+
+            using var stream = SelectedFile.OpenReadStream(10 * 1024 * 1024);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            ms.Position = 0;
+
+            var daList = ExcelServices.ReadDiplomaworksFromExcel(ms);
+            DiplomaWorks.ReplaceAllInDb(daList);
+
+            Message = $"Import OK: {daList.Count} Diplomarbeiten geladen.";
+        }
+        catch (Exception ex)
+        {
+            Message = $"Import Fehler: {ex.Message}";
+        }
+    }
+
+    private async Task ExportExcel()
+    {
+        try
+        {
+            byte[] bytes = ExcelServices.CreateResultsExcel();
+            await JS.SaveAsFile("FoA_Auswertung.xlsx", bytes);
+
+            Message = "Export erstellt.";
+        }
+        catch (Exception ex)
+        {
+            Message = $"Export Fehler: {ex.Message}";
+        }
+    }
+}
