@@ -1,0 +1,45 @@
+﻿h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+h4 {
+    color: #555;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 20px 0;
+}
+
+p {
+    margin: 8px 0;
+}
+
+button {
+    background-color: #4a90a4;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+    button:hover {
+        background-color: #3a7a94;
+    }
+
+a {
+    color: #4a90a4;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }
