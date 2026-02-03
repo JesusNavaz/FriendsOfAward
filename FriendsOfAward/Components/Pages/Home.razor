@@ -5,7 +5,6 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager MyNavMgr
 
-<button @onclick="Btn_GoToAdmin">Admin-Login</button>
 
 <head>
     <meta charset="UTF-8">
@@ -137,58 +136,35 @@
     private int? Superfavorit = null;
     private string? Message;
 
-    void Btn_GoToAdmin()
-    {
-        MyNavMgr.NavigateTo("/admin");
-    }
-
-    // CSS-Klasse für Button (optional, falls du highlighten willst)
-    private string GetButtonClass(int no)
-    {
-        if (Superfavorit == no) return "topfavorit";
-        if (Favoriten.Contains(no)) return "favorit";
-        return "";
-    }
-
-    // Einfachklick: Favorit togglen (max 5), aber nicht wenn Superfavorit
-    private void ToggleFavorit(int no)
-    {
-        if (Superfavorit == no) return;
-
-        if (Favoriten.Contains(no))
-            Favoriten.Remove(no);
-        else if (Favoriten.Count < 5)
-            Favoriten.Add(no);
-    }
-
-    // Doppelklick: Superfavorit togglen (max 1)
-    private void ToggleSuperfavorit(int no)
-    {
-        if (Superfavorit == no)
-        {
-            Superfavorit = null;
-            return;
-        }
-
-        // Falls der Button schon Favorit war, entfernen (damit nicht doppelt gezählt)
-        Favoriten.Remove(no);
-
-        Superfavorit = no;
-    }
-
-    // Absenden: Punkte addieren + Token sperren
     private void SubmitVoting()
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(token))
+            if (string.IsNullOrEmpty(token))
             {
                 Message = "Ungültiger Token.";
                 return;
             }
 
-            // Wichtig: NICHT in eine Voting-Tabelle schreiben, sondern Punkte addieren
-            VoteService.SubmitVotes(token, Favoriten, Superfavorit);
+            var votes = new List<Voting>();
+
+            foreach (var fav in Favoriten)
+            {
+                votes.Add(new Voting(0, token, fav));
+            }
+
+            if (Superfavorit.HasValue)
+            {
+                votes.Add(new Voting(0, token, Superfavorit.Value));
+            }
+
+            foreach (var vote in votes)
+            {
+                string sql =
+                    $"INSERT INTO Voting (QrId, DaId) VALUES ('{vote.QrId}', {vote.DaId})";
+
+                DbWrapper.Wrapper.RunNonQuery(sql);
+            }
 
             Message = "Bewertung erfolgreich gespeichert!";
         }
