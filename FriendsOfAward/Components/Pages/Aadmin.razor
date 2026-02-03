@@ -1,4 +1,5 @@
 ﻿@page "/Admin"
+@using ClassLibrary
 @rendermode InteractiveServer
 @inject NavigationManager Nav
 
@@ -52,7 +53,7 @@
 
     private void Btn_LoginAdmin()
     {
-        if (adminEmail == "admin@htlvb.at" && adminPassword == "Passw0rd")
+        if (AdminService.IsValidAdmin(adminEmail, adminPassword))
         {
             IsAdmin = true;
             error = "";
