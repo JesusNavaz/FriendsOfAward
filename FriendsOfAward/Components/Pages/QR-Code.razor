@@ -33,7 +33,7 @@
     private string? Message;
 
 
-    private const string BaseUrl = "http://172.17.10.91:5432/vote/";
+    private const string BaseUrl = "http://172.17.10.92:5432/vote/";
 
     private void GenerateQrCode()
     {
@@ -43,7 +43,7 @@
             string token = Guid.NewGuid().ToString();
 
             // 2️⃣ URL für Voting
-            string payload = $"http://172.17.10.91:5432/vote/{token}";
+            string payload = $"http://172.17.10.92:5432/vote/{token}";
 
             using var generator = new QRCoder.QRCodeGenerator();
             using var data = generator.CreateQrCode(payload, QRCoder.QRCodeGenerator.ECCLevel.Q);

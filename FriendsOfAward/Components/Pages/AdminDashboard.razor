@@ -1,52 +1,87 @@
 ﻿@page "/AdminDashboard"
-@rendermode InteractiveServer
+@inject NavigationManager Navigation
 
-<h3>AdminDashboard</h3>
+<div class="admin-container">
 
-<p>Willkommen im Admin Dashboard</p>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span class="trophy">🏆</span> Admin Panel
+        </div>
 
-<hr />
+        <div class="voting-status">
+            Voting ist beendet
+        </div>
 
-<h4>Verwaltung</h4>
-<p><NavLink href="/QR-Code">QR-Code Erstellen</NavLink></p>
-<p><NavLink href="/Voting">Abstimmung verwalten</NavLink></p>
-<p><NavLink href="/Ergebnisse">Ergebnisse anzeigen</NavLink></p>
+        <nav class="sidebar-menu">
+            <button class="menu-button" @onclick="@(() => NavigateTo("/AdminDashboard"))"
+                    aria-current="page">
+                📊 Dashboard
+            </button>
 
-<hr />
+            <button class="menu-button" @onclick="@(() => NavigateTo("/QR-Code"))">🔗 QR Codes</button>
 
-<h4>Schnellaktionen</h4>
-<p>
-    <button type="button" @onclick="Btn_StartVoting">Abstimmung starten</button>
-    <button type="button" @onclick="Btn_StopVoting">Abstimmung beenden</button>
-</p>
-<p>Status: @statusMessage</p>
+            <button class="menu-button" @onclick="@(() => NavigateTo("/ExcelUpload"))">📤 Excel Upload</button>
 
-<hr />
+            <button class="menu-button" @onclick="@(() => NavigateTo("/ExcelExport"))">📥 Excel Export</button>
 
-<h4>Statistik</h4>
-<p>Anzahl Teilnehmer: @anzahlTeilnehmer</p>
-<p>Anzahl Stimmen: @anzahlStimmen</p>
+            <button class="menu-button" @onclick="@(() => NavigateTo("/ResetVoting"))">🔄 Reset Voting</button>
+        </nav>
+    </aside>
 
-@code
-{
-    private string statusMessage = "Keine Abstimmung aktiv";
-    private int anzahlTeilnehmer = 0;
-    private int anzahlStimmen = 0;
+    <main class="content">
 
-    protected override void OnInitialized()
+        <h1 class="dashboard-title">Friends of Award Dashboard</h1>
+        <p class="dashboard-subtitle">Live-Auswertung & Verwaltung der Abstimmung</p>
+
+        <!-- Beispiel Score Cards hier -->
+        <section class="score-cards">
+
+            <div class="score-card">
+                <h2>#1</h2>
+                <p class="project-name">Digitale Kundenverwaltung für kleine Unternehmen</p>
+                <p class="score">0 <span class="points-label">Punkte</span></p>
+                <div class="stars">⭐ 0 ★ 0 ✩ 0</div>
+            </div>
+
+            <!-- weitere Cards ... -->
+
+        </section>
+
+        <!-- Tabelle -->
+        <section class="diploma-table-section">
+            <h2>Alle Diplomarbeiten</h2>
+            <table class="diploma-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Thema</th>
+                        <th>Punkte</th>
+                        <th>⭐</th>
+                        <th>★</th>
+                        <th>✩</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Digitale Kundenverwaltung für kleine Unternehmen</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <!-- Weitere Zeilen -->
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+</div>
+
+@code {
+    void NavigateTo(string url)
     {
-        // Später aus DB laden
-        anzahlTeilnehmer = 42;
-        anzahlStimmen = 128;
-    }
-
-    private void Btn_StartVoting()
-    {
-        statusMessage = "Abstimmung läuft...";
-    }
-
-    private void Btn_StopVoting()
-    {
-        statusMessage = "Abstimmung beendet";
+        Navigation.NavigateTo(url);
     }
 }
