@@ -52,11 +52,11 @@ public static class ExcelServices
         int r = 2;
         foreach (DataRow row in dt.Rows)
         {
-            ws.Cell(r, 1).Value = row["work_no"];
-            ws.Cell(r, 2).Value = row["department_code"];
-            ws.Cell(r, 3).Value = row["title"];
-            ws.Cell(r, 4).Value = row["authors"];
-            ws.Cell(r, 5).Value = row["points"];
+            ws.Cell(r, 1).Value = (XLCellValue)row["work_no"];
+            ws.Cell(r, 2).Value = (XLCellValue)row["department_code"];
+            ws.Cell(r, 3).Value = (XLCellValue)row["title"];
+            ws.Cell(r, 4).Value = (XLCellValue)row["authors"];
+            ws.Cell(r, 5).Value = (XLCellValue)row["points"];
             r++;
         }
 

@@ -142,6 +142,41 @@
         MyNavMgr.NavigateTo("/admin");
     }
 
+    // CSS-Klasse für Button (optional, falls du highlighten willst)
+    private string GetButtonClass(int no)
+    {
+        if (Superfavorit == no) return "topfavorit";
+        if (Favoriten.Contains(no)) return "favorit";
+        return "";
+    }
+
+    // Einfachklick: Favorit togglen (max 5), aber nicht wenn Superfavorit
+    private void ToggleFavorit(int no)
+    {
+        if (Superfavorit == no) return;
+
+        if (Favoriten.Contains(no))
+            Favoriten.Remove(no);
+        else if (Favoriten.Count < 5)
+            Favoriten.Add(no);
+    }
+
+    // Doppelklick: Superfavorit togglen (max 1)
+    private void ToggleSuperfavorit(int no)
+    {
+        if (Superfavorit == no)
+        {
+            Superfavorit = null;
+            return;
+        }
+
+        // Falls der Button schon Favorit war, entfernen (damit nicht doppelt gezählt)
+        Favoriten.Remove(no);
+
+        Superfavorit = no;
+    }
+
+    // Absenden: Punkte addieren + Token sperren
     private void SubmitVoting()
     {
         try
@@ -152,52 +187,8 @@
                 return;
             }
 
-            string tokenSafe = token.Replace("'", "''");
-
-            string sqlGetQr =
-                $"SELECT id FROM foa_qrcodes WHERE token = '{tokenSafe}' AND is_used = 0 LIMIT 1";
-
-            var dt = DbWrapperMySqlV2.Wrapper.RunQuery(sqlGetQr); 
-            if (dt == null || dt.Rows.Count == 0)
-            {
-                Message = "Token ungültig oder bereits verwendet.";
-                return;
-            }
-
-            int qrId = Convert.ToInt32(dt.Rows[0]["id"]);
-
-            if (Favoriten.Count > 5)
-            {
-                Message = "Maximal 5 Favoriten erlaubt.";
-                return;
-            }
-
-            if (Superfavorit.HasValue && Favoriten.Contains(Superfavorit.Value))
-            {
-                Message = "Superfavorit darf nicht zusätzlich als Favorit gesetzt sein.";
-                return;
-            }
-
-            foreach (var daId in Favoriten)
-            {
-                string sqlInsert =
-                    $"INSERT INTO Voting (QrId, DaId, IsSuper) VALUES ({qrId}, {daId}, 0)";
-
-                DbWrapperMySqlV2.Wrapper.RunNonQuery(sqlInsert);
-            }
-
-            if (Superfavorit.HasValue)
-            {
-                string sqlInsertSuper =
-                    $"INSERT INTO Voting (QrId, DaId, IsSuper) VALUES ({qrId}, {Superfavorit.Value}, 1)";
-
-                DbWrapperMySqlV2.Wrapper.RunNonQuery(sqlInsertSuper);
-            }
-
-            string sqlLock =
-                $"UPDATE foa_qrcodes SET is_used = 1 WHERE id = {qrId} AND is_used = 0";
-
-            DbWrapperMySqlV2.Wrapper.RunNonQuery(sqlLock);
+            // Wichtig: NICHT in eine Voting-Tabelle schreiben, sondern Punkte addieren
+            VoteService.SubmitVotes(token, Favoriten, Superfavorit);
 
             Message = "Bewertung erfolgreich gespeichert!";
         }
