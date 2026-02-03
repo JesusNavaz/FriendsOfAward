@@ -8,6 +8,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddHttpContextAccessor();
 
+// Auth Services
+builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<AuthenticationStateProvider, FriendsOfAward.MyCustomAuthStateProvider>();
+
 // Register a distributed cache (in-memory for single-server dev)
 builder.Services.AddDistributedMemoryCache();
 
