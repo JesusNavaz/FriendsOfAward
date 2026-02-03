@@ -31,9 +31,7 @@
         <p>Anzahl Stimmen: @anzahlStimmen</p>
     </Authorized>
     <NotAuthorized>
-        @{
-            Nav.NavigateTo("/Admin");
-        }
+        <p>Nicht eingeloggt. <a href="/Admin">Zum Login</a></p>
     </NotAuthorized>
 </AuthorizeView>
 

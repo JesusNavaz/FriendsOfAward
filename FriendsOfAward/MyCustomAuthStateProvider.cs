@@ -6,9 +6,9 @@ namespace FriendsOfAward
 
     public class MyCustomAuthStateProvider : AuthenticationStateProvider
     {
-        private ClaimsPrincipal _anonymous = new(new ClaimsIdentity());
+        private static ClaimsPrincipal _anonymous = new(new ClaimsIdentity());
         // _anonymous - falls _currentUser null ist
-        private ClaimsPrincipal? _currentUser = null;
+        private static ClaimsPrincipal? _currentUser = null;
 
 
         public override Task<AuthenticationState> GetAuthenticationStateAsync()
