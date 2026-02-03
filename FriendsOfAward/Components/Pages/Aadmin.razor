@@ -2,6 +2,7 @@
 @using ClassLibrary
 @rendermode InteractiveServer
 @inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthProvider
 
 <div class="admin-container">
 
@@ -57,6 +58,11 @@
         {
             IsAdmin = true;
             error = "";
+
+            // Auth Provider Login
+            var authProvider = (MyCustomAuthStateProvider)AuthProvider;
+            authProvider.Login(adminEmail);
+
             Nav.NavigateTo("/AdminDashboard");
         }
         else
@@ -70,6 +76,11 @@
         IsAdmin = false;
         adminEmail = "";
         adminPassword = "";
+
+        // Auth Provider Logout
+        var authProvider = (MyCustomAuthStateProvider)AuthProvider;
+        authProvider.Logout();
+
         Nav.NavigateTo("/");
     }
 }
