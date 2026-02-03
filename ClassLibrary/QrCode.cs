@@ -7,10 +7,8 @@ namespace ClassLibrary
 {
     public class QrCode
     {
-        public int Id { get; set; }
-        public string Token { get; set; }
-        public bool IsUsed { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public int Id { get; set; }         // DB id
+        public string Token { get; set; }   // token
 
         public QrCode(string token)
         {
@@ -25,12 +23,9 @@ namespace ClassLibrary
                 {
                     string tokenSafe = (qr.Token ?? "").Replace("'", "''");
 
-                    string sql =
-                        $"INSERT INTO foa_qrcodes (token, is_used) VALUES ('{tokenSafe}', 0)";
-
+                    string sql = $"INSERT INTO foa_qrcodes (token, is_used) VALUES ('{tokenSafe}', 0)";
                     DbWrapperMySqlV2.Wrapper.RunNonQuery(sql);
                 }
-
                 return true;
             }
             catch (Exception ex)
@@ -40,44 +35,25 @@ namespace ClassLibrary
             }
         }
 
-        public static bool IsTokenValid(string token)
+        // Liefert die QR-ID, aber nur wenn noch nicht used
+        public static int GetValidQrIdByToken(string token)
         {
-            try
-            {
-                string tokenSafe = (token ?? "").Replace("'", "''");
+            string tokenSafe = (token ?? "").Replace("'", "''");
 
-                string sql =
-                    $"SELECT id FROM foa_qrcodes WHERE token = '{tokenSafe}' AND is_used = 0 LIMIT 1";
+            string sql =
+                $"SELECT id FROM foa_qrcodes WHERE token = '{tokenSafe}' AND is_used = 0 LIMIT 1";
 
-                DataTable dt = DbWrapperMySqlV2.Wrapper.RunQuery(sql);
+            DataTable dt = DbWrapperMySqlV2.Wrapper.RunQuery(sql);
+            if (dt == null || dt.Rows.Count == 0) return 0;
 
-                return dt != null && dt.Rows.Count > 0;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in IsTokenValid: {ex.Message}");
-                return false;
-            }
+            return Convert.ToInt32(dt.Rows[0]["id"]);
         }
 
-        public static bool MarkTokenAsUsed(string token)
+        public static void MarkAsUsed(string token)
         {
-            try
-            {
-                string tokenSafe = (token ?? "").Replace("'", "''");
-
-                string sql =
-                    $"UPDATE foa_qrcodes SET is_used = 1 WHERE token = '{tokenSafe}' AND is_used = 0";
-
-                DbWrapperMySqlV2.Wrapper.RunNonQuery(sql);
-
-                return !IsTokenValid(token);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in MarkTokenAsUsed: {ex.Message}");
-                return false;
-            }
+            string tokenSafe = (token ?? "").Replace("'", "''");
+            string sql = $"UPDATE foa_qrcodes SET is_used = 1 WHERE token = '{tokenSafe}' AND is_used = 0";
+            DbWrapperMySqlV2.Wrapper.RunNonQuery(sql);
         }
     }
 }
