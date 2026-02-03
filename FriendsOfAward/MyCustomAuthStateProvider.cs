@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 
-namespace Blazor_WithAuth_ForSWP5
+namespace FriendsOfAward
 {
 
     public class MyCustomAuthStateProvider : AuthenticationStateProvider
