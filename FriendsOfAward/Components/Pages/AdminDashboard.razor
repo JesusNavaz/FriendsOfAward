@@ -1,31 +1,41 @@
 ﻿@page "/AdminDashboard"
 @rendermode InteractiveServer
+@inject NavigationManager Nav
 
-<h3>AdminDashboard</h3>
+<AuthorizeView>
+    <Authorized>
+        <h3>AdminDashboard</h3>
 
-<p>Willkommen im Admin Dashboard</p>
+        <p>Willkommen im Admin Dashboard</p>
 
-<hr />
+        <hr />
 
-<h4>Verwaltung</h4>
-<p><NavLink href="/QR-Code">QR-Code Erstellen</NavLink></p>
-<p><NavLink href="/Voting">Abstimmung verwalten</NavLink></p>
-<p><NavLink href="/Ergebnisse">Ergebnisse anzeigen</NavLink></p>
+        <h4>Verwaltung</h4>
+        <p><NavLink href="/QR-Code">QR-Code Erstellen</NavLink></p>
+        <p><NavLink href="/Voting">Abstimmung verwalten</NavLink></p>
+        <p><NavLink href="/Ergebnisse">Ergebnisse anzeigen</NavLink></p>
 
-<hr />
+        <hr />
 
-<h4>Schnellaktionen</h4>
-<p>
-    <button type="button" @onclick="Btn_StartVoting">Abstimmung starten</button>
-    <button type="button" @onclick="Btn_StopVoting">Abstimmung beenden</button>
-</p>
-<p>Status: @statusMessage</p>
+        <h4>Schnellaktionen</h4>
+        <p>
+            <button type="button" @onclick="Btn_StartVoting">Abstimmung starten</button>
+            <button type="button" @onclick="Btn_StopVoting">Abstimmung beenden</button>
+        </p>
+        <p>Status: @statusMessage</p>
 
-<hr />
+        <hr />
 
-<h4>Statistik</h4>
-<p>Anzahl Teilnehmer: @anzahlTeilnehmer</p>
-<p>Anzahl Stimmen: @anzahlStimmen</p>
+        <h4>Statistik</h4>
+        <p>Anzahl Teilnehmer: @anzahlTeilnehmer</p>
+        <p>Anzahl Stimmen: @anzahlStimmen</p>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            Nav.NavigateTo("/Admin");
+        }
+    </NotAuthorized>
+</AuthorizeView>
 
 @code
 {
