@@ -1,202 +1,371 @@
-﻿h3 /* ==============================
-   Global Styles
-   ============================== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: "Segoe UI", sans-serif;
+﻿/* AdminDashboard.razor.css (TOPBAR: NOCH GRÖSSER + ÜBERSICHTLICHER) */
+
+:root {
+    --bg: #F5F5F7;
+    --surface: rgba(255,255,255,0.74);
+    --surface-strong: rgba(255,255,255,0.92);
+    --text: #111827;
+    --muted: rgba(17,24,39,0.62);
+    --border: rgba(17,24,39,0.10);
+    --shadow: 0 18px 46px rgba(0,0,0,0.12);
+    --shadow-soft: 0 10px 26px rgba(0,0,0,0.10);
+    --play: #BFE6D4;
+    --stop: #F58F7C;
 }
 
-body, html {
-    height: 100%;
-    background-color: #f4f5f7;
-    color: #111827;
-}
-
-/* ==============================
-   Admin Container
-   ============================== */
-.admin-container {
-    display: flex;
-    height: 100vh;
-    padding: 16px;
-}
-
-/* ==============================
-   Sidebar
-   ============================== */
-.sidebar {
-    width: 280px;
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
+.topbar-layout {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    height: 100vh;
+    background: var(--bg);
 }
 
-.sidebar-header {
-    font-size: 22px;
+/* ==============================
+   TOPBAR (SUPER GROß + CLEAR)
+   ============================== */
+.topbar {
+    margin: 20px;
+    padding: 20px 22px;
+    border-radius: 26px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    display: grid;
+    grid-template-columns: 320px 1fr auto;
+    align-items: center;
+    column-gap: 20px;
+    row-gap: 16px;
+}
+
+/* Left Block */
+.topbar-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.topbar-title {
+    font-size: 28px; /* deutlich größer */
     font-weight: 900;
-    text-align: center;
+    letter-spacing: 0.2px;
+    color: var(--text);
+    line-height: 1.05;
 }
 
-/* Buttons */
-.menu-button {
-    border: none;
-    border-radius: 12px;
-    padding: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    width: 100%;
-    font-size: 15px;
-    transition: all 0.2s ease;
+.topbar-subtitle {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--muted);
 }
 
-    .menu-button:hover {
-        transform: translateY(-2px);
-    }
-
-.start-button {
-    background-color: #22c55e;
-    color: white;
+/* Center */
+.topbar-center {
+    display: flex;
+    justify-content: center;
 }
 
-    .start-button:disabled {
-        background-color: #9ca3af;
-        cursor: not-allowed;
-    }
-
-.reset-button {
-    background-color: #ef4444;
-    color: white;
+/* Right */
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: flex-end;
 }
 
-/* Voting Status */
+/* ==============================
+   Voting Status (größer + breiter)
+   ============================== */
 .voting-status-display {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 12px;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 18px;
     border-radius: 999px;
-    font-weight: 700;
+    background: rgba(255,255,255,0.86);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+    min-width: 520px; /* breiter = übersichtlicher */
 }
 
     .voting-status-display.active {
-        background-color: #22c55e;
-        color: white;
+        border-color: rgba(191,230,212,0.70);
+        background: rgba(191,230,212,0.24);
     }
 
     .voting-status-display.paused {
-        background-color: #ef4444;
-        color: white;
+        border-color: rgba(245,143,124,0.60);
+        background: rgba(245,143,124,0.20);
     }
 
 .status-icon {
-    font-size: 20px;
+    font-size: 26px; /* größer */
+}
+
+.status-content {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.status-text {
+    font-size: 16px; /* größer */
+    font-weight: 900;
+    color: var(--text);
+    opacity: 0.90;
 }
 
 .status-time {
-    font-size: 16px;
+    font-size: 18px; /* größer */
     font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.96);
+    border: 1px solid var(--border);
+    color: var(--text);
 }
 
-/* Content */
+/* ==============================
+   Play/Stop Buttons (groß, klar)
+   ============================== */
+.vote-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.vote-icon-btn {
+    width: 64px; /* größer */
+    height: 54px; /* größer */
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: var(--surface-strong);
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 22px; /* größer */
+    cursor: pointer;
+    transition: transform 0.08s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .vote-icon-btn:hover {
+        filter: brightness(1.02);
+        box-shadow: 0 14px 34px rgba(0,0,0,0.12);
+    }
+
+    .vote-icon-btn:active {
+        transform: scale(0.98);
+    }
+
+.vote-start {
+    background: linear-gradient(180deg, rgba(191,230,212,0.98), rgba(191,230,212,0.78));
+    border-color: rgba(191,230,212,0.92);
+    color: #1f2f27;
+}
+
+    .vote-start:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+.vote-reset {
+    background: linear-gradient(180deg, rgba(245,143,124,0.98), rgba(245,143,124,0.78));
+    border-color: rgba(245,143,124,0.88);
+    color: #3a1c17;
+}
+
+/* ==============================
+   Navigation (groß + übersichtlich)
+   ============================== */
+.topbar-nav {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.nav-btn {
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 14px 18px; /* größer */
+    background: var(--surface-strong);
+    color: var(--text);
+    font-weight: 900;
+    font-size: 16px; /* größer */
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.10s ease, filter 0.15s ease, box-shadow 0.15s ease;
+    white-space: nowrap;
+}
+
+    .nav-btn:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.02);
+        box-shadow: 0 14px 34px rgba(0,0,0,0.12);
+    }
+
+    .nav-btn.active {
+        border-color: rgba(245,143,124,0.60);
+        box-shadow: 0 14px 34px rgba(245,143,124,0.16);
+    }
+
+/* ==============================
+   Content Area
+   ============================== */
 .content {
     flex: 1;
-    padding: 40px;
+    padding: 30px 44px 44px 44px;
     overflow-y: auto;
 }
 
 .dashboard-title {
-    font-size: 28px;
+    font-size: 34px;
     font-weight: 900;
+    color: var(--text);
     margin-bottom: 8px;
 }
 
 .dashboard-subtitle {
     font-size: 16px;
-    color: #6b7280;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 26px;
+}
+
+/* ==============================
+   Cards / Table (leicht größer)
+   ============================== */
+.score-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+    gap: 18px;
     margin-bottom: 30px;
 }
 
-/* Score Cards */
-.score-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-}
-
 .score-card {
-    background: white;
+    background: var(--surface-strong);
+    border: 1px solid var(--border);
+    border-radius: 20px;
     padding: 20px;
-    border-radius: 16px;
-    border-left: 6px solid #22c55e;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.12s ease, box-shadow 0.15s ease;
+    position: relative;
+    overflow: hidden;
 }
 
     .score-card:hover {
-        transform: translateY(-4px);
+        transform: translateY(-2px);
+        box-shadow: 0 18px 46px rgba(0,0,0,0.12);
     }
 
     .score-card h2 {
         font-size: 20px;
-        font-weight: 800;
+        font-weight: 900;
+        color: var(--text);
         margin-bottom: 6px;
     }
 
-    .score-card .score {
-        font-size: 26px;
-        font-weight: 800;
-        margin-top: 8px;
-    }
+.project-name {
+    color: var(--muted);
+    font-weight: 700;
+}
 
-    .score-card .stars {
-        margin-top: 8px;
-        font-size: 14px;
-    }
+.score {
+    font-size: 30px;
+    font-weight: 900;
+    color: var(--text);
+    margin-top: 10px;
+}
 
-/* Tabelle */
+.points-label {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--muted);
+}
+
+.stars {
+    margin-top: 10px;
+    font-size: 15px;
+    color: var(--muted);
+}
+
 .diploma-table-section h2 {
     font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 16px;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 14px;
 }
 
 .diploma-table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
-    border-radius: 12px;
+    background: var(--surface-strong);
+    border: 1px solid var(--border);
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-soft);
 }
 
     .diploma-table thead {
-        background-color: #e6f4ee;
+        background: rgba(17,24,39,0.05);
     }
 
-    .diploma-table th, .diploma-table td {
-        padding: 14px;
+    .diploma-table th,
+    .diploma-table td {
+        padding: 16px;
         text-align: left;
+        color: var(--text);
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .diploma-table th {
+        font-weight: 900;
     }
 
     .diploma-table tbody tr:nth-child(even) {
-        background-color: #f9fafb;
+        background: rgba(17,24,39,0.03);
     }
 
-/* Responsive */
-@media (max-width:1024px) {
-    .admin-container {
-        flex-direction: column;
+    .diploma-table tbody tr:hover {
+        background: rgba(245,143,124,0.14);
     }
 
-    .sidebar {
+/* ==============================
+   Responsive: Topbar stacked
+   ============================== */
+@media (max-width: 1180px) {
+    .topbar {
+        grid-template-columns: 1fr;
+    }
+
+    .topbar-center {
+        justify-content: flex-start;
+    }
+
+    .voting-status-display {
+        min-width: unset;
         width: 100%;
-        margin-bottom: 16px;
+    }
+
+    .topbar-right {
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .topbar-nav {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .content {
+        padding: 22px;
     }
 }
