@@ -129,42 +129,57 @@
 </body>
 
 @code {
-    [Parameter]
-    public string? token { get; set; }
+    [Parameter] public string? token { get; set; }
 
     private List<int> Favoriten = new();
     private int? Superfavorit = null;
     private string? Message;
 
+    void Btn_GoToAdmin() => MyNavMgr.NavigateTo("/admin");
+
+    private string GetButtonClass(int no)
+    {
+        if (Superfavorit == no) return "topfavorit";
+        if (Favoriten.Contains(no)) return "favorit";
+        return "";
+    }
+
+    private void ToggleFavorit(int no)
+    {
+        if (Superfavorit == no) return;
+
+        if (Favoriten.Contains(no))
+            Favoriten.Remove(no);
+        else if (Favoriten.Count < 5)
+            Favoriten.Add(no);
+    }
+
+    private void ToggleSuperfavorit(int no)
+    {
+        if (Superfavorit == no)
+        {
+            Superfavorit = null;
+            return;
+        }
+
+        // wenn der Button ein Favorit war, entfernen (damit nicht doppelt gezählt)
+        Favoriten.Remove(no);
+
+        Superfavorit = no;
+    }
+
     private void SubmitVoting()
     {
         try
         {
-            if (string.IsNullOrEmpty(token))
+            if (string.IsNullOrWhiteSpace(token))
             {
                 Message = "Ungültiger Token.";
                 return;
             }
 
-            var votes = new List<Voting>();
-
-            foreach (var fav in Favoriten)
-            {
-                votes.Add(new Voting(0, token, fav));
-            }
-
-            if (Superfavorit.HasValue)
-            {
-                votes.Add(new Voting(0, token, Superfavorit.Value));
-            }
-
-            foreach (var vote in votes)
-            {
-                string sql =
-                    $"INSERT INTO Voting (QrId, DaId) VALUES ('{vote.QrId}', {vote.DaId})";
-
-                DbWrapper.Wrapper.RunNonQuery(sql);
-            }
+            // Diese Methode addiert Punkte in foa_diplomascores und sperrt den Token.
+            VoteService.SubmitVotes(token, Favoriten, Superfavorit);
 
             Message = "Bewertung erfolgreich gespeichert!";
         }
