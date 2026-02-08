@@ -2,92 +2,100 @@
 @inject NavigationManager Navigation
 @implements IDisposable
 
-<div class="admin-container">
 
-    <aside class="sidebar">
+<AuthorizeView>
+    <Authorized>
+        <div class="admin-container">
 
-        <div class="sidebar-header">
-            🏆 Admin Panel
-        </div>
+            <aside class="sidebar">
 
-        <!-- Voting Status -->
-        <div class="voting-status-display @(votingActive ? "active" : "paused")">
-            <span class="status-icon">
-                @(votingActive ? "▶️" : "⏸️")
-            </span>
-            <div class="status-content">
-                <span class="status-text">@statusText</span>
-                @if (votingActive)
-                {
-                    <span class="status-time">@remainingTime</span>
-                }
-            </div>
-        </div>
-
-        <!-- Start Voting Button -->
-        <button class="menu-button start-button"
-                @onclick="StartVoting"
-                disabled="@votingActive">
-            ▶️ Voting starten (10 Min)
-        </button>
-
-        <!-- Navigation -->
-        <nav class="sidebar-menu">
-            <button class="menu-button active">Dashboard</button>
-            <button class="menu-button" @onclick="@(() => NavigateTo("/QR-Code"))">QR Codes</button>
-            <button class="menu-button" @onclick="@(() => NavigateTo("/ExcelUpload"))">Excel Upload</button>
-            <button class="menu-button" @onclick="@(() => NavigateTo("/ExcelExport"))">Excel Export</button>
-        </nav>
-
-        <!-- Reset Voting Button -->
-        <button class="menu-button reset-button"
-                @onclick="ResetVoting">
-            🔄 Reset Voting
-        </button>
-    </aside>
-
-    <main class="content">
-        <h1 class="dashboard-title">Friends of Award Dashboard</h1>
-        <p class="dashboard-subtitle">Live-Auswertung & Verwaltung der Abstimmung</p>
-
-        <section class="score-cards">
-            @for (int i = 1; i <= 3; i++)
-            {
-                <div class="score-card">
-                    <h2>#@i</h2>
-                    <p class="project-name">Projektname</p>
-                    <p class="score">0 <span class="points-label">Punkte</span></p>
-                    <div class="stars">⭐ 0 | ⭐⭐ 0</div>
+                <div class="sidebar-header">
+                    🏆 Admin Panel
                 </div>
-            }
-        </section>
 
-        <section class="diploma-table-section">
-            <h2>Alle Diplomarbeiten</h2>
-            <table class="diploma-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Thema</th>
-                        <th>Punkte</th>
-                        <th>⭐⭐</th>
-                        <th>⭐</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Testprojekt</td>
-                        <td> 30</td>
-                        <td> 10</td>
-                        <td> 3</td>
+                <!-- Voting Status -->
+                <div class="voting-status-display @(votingActive ? "active" : "paused")">
+                    <span class="status-icon">
+                        @(votingActive ? "▶️" : "⏸️")
+                    </span>
+                    <div class="status-content">
+                        <span class="status-text">@statusText</span>
+                        @if (votingActive)
+                        {
+                            <span class="status-time">@remainingTime</span>
+                        }
+                    </div>
+                </div>
 
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-    </main>
-</div>
+                <!-- Start Voting Button -->
+                <button class="menu-button start-button"
+                        @onclick="StartVoting"
+                        disabled="@votingActive">
+                    ▶️ Voting starten (10 Min)
+                </button>
+
+                <!-- Navigation -->
+                <nav class="sidebar-menu">
+                    <button class="menu-button active">Dashboard</button>
+                    <button class="menu-button" @onclick="@(() => NavigateTo("/QR-Code"))">QR Codes</button>
+                    <button class="menu-button" @onclick="@(() => NavigateTo("/ExcelUpload"))">Excel Upload</button>
+                    <button class="menu-button" @onclick="@(() => NavigateTo("/ExcelExport"))">Excel Export</button>
+                </nav>
+
+                <!-- Reset Voting Button -->
+                <button class="menu-button reset-button"
+                        @onclick="ResetVoting">
+                    🔄 Reset Voting
+                </button>
+            </aside>
+
+            <main class="content">
+                <h1 class="dashboard-title">Friends of Award Dashboard</h1>
+                <p class="dashboard-subtitle">Live-Auswertung & Verwaltung der Abstimmung</p>
+
+                <section class="score-cards">
+                    @for (int i = 1; i <= 3; i++)
+                    {
+                        <div class="score-card">
+                            <h2>#@i</h2>
+                            <p class="project-name">Projektname</p>
+                            <p class="score">0 <span class="points-label">Punkte</span></p>
+                            <div class="stars">⭐ 0 | ⭐⭐ 0</div>
+                        </div>
+                    }
+                </section>
+
+                <section class="diploma-table-section">
+                    <h2>Alle Diplomarbeiten</h2>
+                    <table class="diploma-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Thema</th>
+                                <th>Punkte</th>
+                                <th>⭐⭐</th>
+                                <th>⭐</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Testprojekt</td>
+                                <td> 30</td>
+                                <td> 10</td>
+                                <td> 3</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </main>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>Nicht eingeloggt. <a href="/Admin">Zum Login</a></p>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private bool votingActive = false;
