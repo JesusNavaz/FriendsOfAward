@@ -1,71 +1,83 @@
 ﻿@page "/admin/excel"
 @rendermode InteractiveServer
 
+@using ClassLibrary
 @using Microsoft.AspNetCore.Components.Forms
 @inject IJSRuntime JS
 
-<h3>Admin: Excel Import/Export</h3>
+<h1>Admin: Excel Import/Export</h1>
 
-<p>@Message</p>
+@if (message != "")
+{
+    <p class="msg">@message</p>
+}
 
-<h4>Import Diplomarbeiten (ersetzt DB)</h4>
-<InputFile OnChange="OnFileSelected" accept=".xlsx" />
-<button @onclick="ImportExcel" disabled="@(!CanImport)">Import starten</button>
+<h3>Import Diplomarbeiten (ersetzt DB)</h3>
 
-<hr />
+<p>
+    <InputFile OnChange="OnFileSelected" accept=".xlsx" />
+    <button class="btn" @onclick="Btn_ImportExcel" disabled="@(!canImport)">Import starten</button>
+</p>
 
-<h4>Export Auswertung</h4>
-<button @onclick="ExportExcel">Excel herunterladen</button>
+<h3>Export Auswertung</h3>
 
-@code {
-    private IBrowserFile? SelectedFile;
-    private bool CanImport => SelectedFile != null;
-    private string? Message;
+<p>
+    <button class="btn" @onclick="Btn_ExportExcel">Excel herunterladen</button>
+</p>
 
+@code
+{
+    // MERKMALE
+    private IBrowserFile? selectedFile = null;
+    private string message = "";
+
+    // PROPERTIES
+    private bool canImport => selectedFile != null;
+
+    // METHODEN
     private void OnFileSelected(InputFileChangeEventArgs e)
     {
-        SelectedFile = e.File;
-        Message = $"Ausgewählt: {SelectedFile.Name}";
+        selectedFile = e.File;
+        message = $"Datei gewählt: {selectedFile.Name}";
     }
 
-    private async Task ImportExcel()
+    private void Btn_ImportExcel()
     {
+        message = "";
+
+        if (selectedFile == null)
+        {
+            message = "Bitte zuerst eine Excel-Datei auswählen!";
+            return;
+        }
+
         try
         {
-            if (SelectedFile == null)
-            {
-                Message = "Bitte Datei auswählen.";
-                return;
-            }
-
-            using var stream = SelectedFile.OpenReadStream(10 * 1024 * 1024);
-            using var ms = new MemoryStream();
-            await stream.CopyToAsync(ms);
-            ms.Position = 0;
-
-            var daList = ExcelServices.ReadDiplomaworksFromExcel(ms);
-            DiplomaWorks.ReplaceAllInDb(daList);
-
-            Message = $"Import OK: {daList.Count} Diplomarbeiten geladen.";
+            using Stream stream = selectedFile.OpenReadStream(10 * 1024 * 1024);
+            ExcelService.ImportDiplomaWorks(stream);
+            message = "Import OK (DB ersetzt).";
         }
         catch (Exception ex)
         {
-            Message = $"Import Fehler: {ex.Message}";
+            message = $"Import-Fehler: {ex.Message}";
         }
     }
 
-    private async Task ExportExcel()
+    private async Task Btn_ExportExcel()
     {
+        message = "";
+
         try
         {
-            byte[] bytes = ExcelServices.CreateResultsExcel();
-            await JS.SaveAsFile("FoA_Auswertung.xlsx", bytes);
+            byte[] bytes = ExcelService.ExportResultsToExcel();
+            string base64 = Convert.ToBase64String(bytes);
+            await JS.InvokeVoidAsync("saveAsFile", "FoA_Auswertung.xlsx", base64);
 
-            Message = "Export erstellt.";
+            message = "Export OK (Download gestartet).";
         }
         catch (Exception ex)
         {
-            Message = $"Export Fehler: {ex.Message}";
+            message = $"Export-Fehler: {ex.Message}";
         }
     }
 }
