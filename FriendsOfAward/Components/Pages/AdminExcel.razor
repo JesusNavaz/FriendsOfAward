@@ -27,35 +27,32 @@
 
 @code
 {
-    // MERKMALE
     private IBrowserFile? selectedFile = null;
     private string message = "";
-
-    // PROPERTIES
     private bool canImport => selectedFile != null;
 
-    // METHODEN
     private void OnFileSelected(InputFileChangeEventArgs e)
     {
         selectedFile = e.File;
         message = $"Datei gewählt: {selectedFile.Name}";
     }
 
-    private void Btn_ImportExcel()
+    private async Task Btn_ImportExcel()
     {
         message = "";
 
         if (selectedFile == null)
         {
-            message = "Bitte zuerst eine Excel-Datei auswählen!";
+            message = "Keine Datei ausgewählt.";
             return;
         }
 
         try
         {
-            using Stream stream = selectedFile.OpenReadStream(10 * 1024 * 1024);
-            ExcelService.ImportDiplomaWorks(stream);
-            message = "Import OK (DB ersetzt).";
+            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            await ExcelService.ImportDiplomaWorksAsync(stream);
+
+            message = "Import OK (DB wurde ersetzt).";
         }
         catch (Exception ex)
         {
