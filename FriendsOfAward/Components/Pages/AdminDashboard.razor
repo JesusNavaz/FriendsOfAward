@@ -1,53 +1,66 @@
 ﻿@page "/AdminDashboard"
 @inject NavigationManager Navigation
 @implements IDisposable
+@rendermode InteractiveServer
+
 
 
 <AuthorizeView>
     <Authorized>
-        <div class="admin-container">
+        <div class="admin-container topbar-layout">
 
-            <aside class="sidebar">
+            <header class="topbar">
 
-                <div class="sidebar-header">
-                    🏆 Admin Panel
+                <div class="topbar-left">
+                    <div class="topbar-title">ADMIN PANEL</div>
                 </div>
 
-                <!-- Voting Status -->
-                <div class="voting-status-display @(votingActive ? "active" : "paused")">
-                    <span class="status-icon">
-                        @(votingActive ? "▶️" : "⏸️")
-                    </span>
-                    <div class="status-content">
-                        <span class="status-text">@statusText</span>
-                        @if (votingActive)
-                        {
+                <div class="topbar-center">
+                    <div class="voting-status-display @(votingActive ? "active" : "paused")">
+                        <span class="status-icon">@(votingActive ? "▶️" : "")</span>
+                        <div class="status-content">
+                            <span class="status-text">@statusText</span>
                             <span class="status-time">@remainingTime</span>
-                        }
+                        </div>
                     </div>
                 </div>
 
-                <!-- Start Voting Button -->
-                <button class="menu-button start-button"
-                        @onclick="StartVoting"
-                        disabled="@votingActive">
-                    ▶️ Voting starten (10 Min)
-                </button>
+                <div class="topbar-right">
+                    <div class="vote-actions">
+                        <button type="button"
+                                class="vote-icon-btn vote-start"
+                                @onclick="Btn_StartVoting"
+                                disabled="@votingActive"
+                                title="Voting starten (10 Min)">
+                            ▶
+                        </button>
 
-                <!-- Navigation -->
-                <nav class="sidebar-menu">
-                    <button class="menu-button active">Dashboard</button>
-                    <button class="menu-button" @onclick="@(() => NavigateTo("/QR-Code"))">QR Codes</button>
-                    <button class="menu-button" @onclick="@(() => NavigateTo("/ExcelUpload"))">Excel Upload</button>
-                    <button class="menu-button" @onclick="@(() => NavigateTo("/ExcelExport"))">Excel Export</button>
-                </nav>
+                        <button type="button"
+                                class="vote-icon-btn vote-reset"
+                                @onclick="Btn_ResetVoting"
+                                title="Reset">
+                            ⏹
+                        </button>
+                    </div>
 
-                <!-- Reset Voting Button -->
-                <button class="menu-button reset-button"
-                        @onclick="ResetVoting">
-                    🔄 Reset Voting
-                </button>
-            </aside>
+                    <nav class="topbar-nav">
+                        <button type="button" class="nav-btn active">Dashboard</button>
+
+                        <button type="button"
+                                class="nav-btn"
+                                @onclick='() => Btn_NavigateTo("/QR-Code")'>
+                            QR Codes
+                        </button>
+
+                        <button type="button"
+                                class="nav-btn"
+                                @onclick='() => Btn_NavigateTo("/Excel")'>
+                            Excel
+                        </button>
+                    </nav>
+                </div>
+
+            </header>
 
             <main class="content">
                 <h1 class="dashboard-title">Friends of Award Dashboard</h1>
@@ -81,77 +94,82 @@
                             <tr>
                                 <td>1</td>
                                 <td>Testprojekt</td>
-                                <td> 30</td>
-                                <td> 10</td>
-                                <td> 3</td>
-
+                                <td>30</td>
+                                <td>10</td>
+                                <td>3</td>
                             </tr>
                         </tbody>
                     </table>
                 </section>
             </main>
+
         </div>
     </Authorized>
+
     <NotAuthorized>
         <p>Nicht eingeloggt. <a href="/Admin">Zum Login</a></p>
     </NotAuthorized>
 </AuthorizeView>
 
-@code {
+@code
+{
     private bool votingActive = false;
     private string remainingTime = "10:00";
     private string statusText = "Kein aktuelles Voting";
-    private CancellationTokenSource? countdownCts;
 
-    private async Task StartVoting()
+    private System.Threading.Timer? timer;
+    private DateTime endUtc;
+
+    private void Btn_StartVoting()
     {
-        if (votingActive) return;
+        if (votingActive)
+            return;
 
         votingActive = true;
         statusText = "Voting läuft";
-        countdownCts?.Cancel();
-        countdownCts = new CancellationTokenSource();
-        var endTime = DateTime.Now.AddMinutes(10);
+        endUtc = DateTime.UtcNow.AddMinutes(10);
 
-        try
+        timer?.Dispose();
+        timer = new System.Threading.Timer(_ =>
         {
-            while (!countdownCts.IsCancellationRequested)
+            var diff = endUtc - DateTime.UtcNow;
+
+            if (diff <= TimeSpan.Zero)
             {
-                var diff = endTime - DateTime.Now;
+                remainingTime = "00:00";
+                votingActive = false;
+                statusText = "Kein aktuelles Voting";
 
-                if (diff <= TimeSpan.Zero)
-                {
-                    remainingTime = "00:00";
-                    votingActive = false;
-                    statusText = "Kein aktuelles Voting";
-                    break;
-                }
+                timer?.Dispose();
+                timer = null;
 
-                remainingTime = $"{diff.Minutes:D2}:{diff.Seconds:D2}";
-                await InvokeAsync(StateHasChanged);
-                await Task.Delay(1000, countdownCts.Token);
+                _ = InvokeAsync(StateHasChanged);
+                return;
             }
-        }
-        catch (TaskCanceledException)
-        {
-            // Voting wurde zurückgesetzt
-        }
-    }
 
-    private void ResetVoting()
-    {
-        countdownCts?.Cancel();
-        votingActive = false;
-        remainingTime = "10:00";
-        statusText = "Kein aktuelles Voting";
+            int minutes = (int)diff.TotalMinutes;
+            int seconds = diff.Seconds;
+            remainingTime = $"{minutes:D2}:{seconds:D2}";
+
+            _ = InvokeAsync(StateHasChanged);
+        }, null, 0, 1000);
+
         StateHasChanged();
     }
 
-    void NavigateTo(string url) => Navigation.NavigateTo(url);
-
-    public void Dispose()
+    private void Btn_ResetVoting()
     {
-        countdownCts?.Cancel();
-        countdownCts?.Dispose();
+        timer?.Dispose();
+        timer = null;
+
+        votingActive = false;
+        remainingTime = "10:00";
+        statusText = "Kein aktuelles Voting";
+
+        StateHasChanged();
     }
+
+    private void Btn_NavigateTo(string url) => Navigation.NavigateTo(url);
+
+    public void Dispose() => timer?.Dispose();
 }
