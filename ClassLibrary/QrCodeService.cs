@@ -22,14 +22,11 @@ namespace ClassLibrary
             if (string.IsNullOrWhiteSpace(baseVoteUrl))
                 throw new ArgumentException("BaseVoteUrl darf nicht leer sein");
 
-
             string payload = $"{baseVoteUrl.TrimEnd('/')}/{token}";
-
 
             using var generator = new QRCodeGenerator();
             using var data = generator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q);
             using var qrCode = new PngByteQRCode(data);
-
 
             byte[] pngBytes = qrCode.GetGraphic(pixelsPerModule);
             return $"data:image/png;base64,{Convert.ToBase64String(pngBytes)}";
