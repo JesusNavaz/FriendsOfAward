@@ -4,8 +4,6 @@ using System.Collections.Generic;
 
 public static class VoteService
 {
-    // Favoriten: +1, Superfavorit: +2
-    // WorkNo ist die Button-Nummer (1..20), wird auf foa_diplomaworks.work_no gemappt.
     public static void SubmitVotes(string token, List<int> favoriten, int? superfavorit)
     {
         int qrId = QrCode.GetValidQrIdByToken(token);
@@ -18,7 +16,6 @@ public static class VoteService
         if (superfavorit.HasValue && favoriten.Contains(superfavorit.Value))
             throw new Exception("Superfavorit darf nicht zusätzlich als Favorit gesetzt sein.");
 
-        // Favoriten +1
         foreach (int workNo in favoriten)
         {
             string sql =
@@ -29,7 +26,6 @@ public static class VoteService
             DbWrapperMySqlV2.Wrapper.RunNonQuery(sql);
         }
 
-        // Superfavorit +2
         if (superfavorit.HasValue)
         {
             string sql =
@@ -40,7 +36,6 @@ public static class VoteService
             DbWrapperMySqlV2.Wrapper.RunNonQuery(sql);
         }
 
-        // QR sperren
         QrCode.MarkAsUsed(token);
     }
 }
