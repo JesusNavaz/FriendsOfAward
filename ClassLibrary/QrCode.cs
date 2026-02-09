@@ -7,8 +7,8 @@ namespace ClassLibrary
 {
     public class QrCode
     {
-        public int Id { get; set; }         // DB id
-        public string Token { get; set; }   // token
+        public int Id { get; set; }         
+        public string Token { get; set; }   
 
         public QrCode(string token)
         {
@@ -35,7 +35,6 @@ namespace ClassLibrary
             }
         }
 
-        // Liefert die QR-ID, aber nur wenn noch nicht used
         public static int GetValidQrIdByToken(string token)
         {
             string tokenSafe = (token ?? "").Replace("'", "''");
