@@ -1,6 +1,6 @@
-﻿window.saveAsFile = (fileName, bytesBase64) => {
+﻿window.saveAsFile = (filename, bytesBase64) => {
     const link = document.createElement('a');
-    link.download = fileName;
+    link.download = filename;
     link.href = "data:application/octet-stream;base64," + bytesBase64;
     document.body.appendChild(link);
     link.click();

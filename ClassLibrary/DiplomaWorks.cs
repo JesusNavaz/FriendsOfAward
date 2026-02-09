@@ -22,11 +22,18 @@ public class DiplomaWorks
     public static void ReplaceAllInDb(List<DiplomaWorks> daList)
     {
         // Vorgabe im Pflichtenheft: kompletter Ersatz
-        DbWrapperMySqlV2.Wrapper.RunNonQuery("TRUNCATE TABLE foa_diplomaworks");
-        DbWrapperMySqlV2.Wrapper.RunNonQuery("TRUNCATE TABLE foa_diplomascores");
+        // TRUNCATE geht NICHT wegen ForeignKey -> daher DELETE
+
+        DbWrapperMySqlV2.Wrapper.RunNonQuery("DELETE FROM foa_diplomascores;");
+        DbWrapperMySqlV2.Wrapper.RunNonQuery("DELETE FROM foa_diplomaworks;");
+
+        // optional: IDs wieder bei 1 starten
+        DbWrapperMySqlV2.Wrapper.RunNonQuery("ALTER TABLE foa_diplomaworks AUTO_INCREMENT = 1;");
+        DbWrapperMySqlV2.Wrapper.RunNonQuery("ALTER TABLE foa_diplomascores AUTO_INCREMENT = 1;");
 
         SaveDAtoDb(daList);
     }
+
 
     public static bool SaveDAtoDb(List<DiplomaWorks> daList)
     {

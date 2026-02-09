@@ -1,0 +1,24 @@
+﻿h1 {
+    font-family: Segoe UI, Calibri, sans-serif;
+}
+
+h3 {
+    margin-top: 25px;
+}
+
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+.msg {
+    color: green;
+    font-weight: bold;
+}
