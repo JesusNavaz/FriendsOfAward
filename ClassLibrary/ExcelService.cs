@@ -14,11 +14,8 @@ namespace ClassLibrary
             using var ms = new MemoryStream();
             await excelStream.CopyToAsync(ms);
             ms.Position = 0;
-
             using var wb = new XLWorkbook(ms);
-
             var ws = wb.Worksheet(1);
-
             var list = new List<DiplomaWorks>();
             int row = 2;
 

@@ -5,11 +5,11 @@ using System.Data;
 
 public class DiplomaWorks
 {
-    public int Id { get; set; }                 // DB id (AUTO_INCREMENT)
-    public int WorkNo { get; set; }             // Nr (1..20)
-    public string DepartmentCode { get; set; }  // MB, ME, ...
-    public string Title { get; set; }           // Titel
-    public string Authors { get; set; }         // Autor:innen
+    public int Id { get; set; }
+    public int WorkNo { get; set; }
+    public string DepartmentCode { get; set; }
+    public string Title { get; set; }
+    public string Authors { get; set; }
 
     public DiplomaWorks(int workNo, string departmentCode, string title, string authors)
     {
@@ -21,13 +21,9 @@ public class DiplomaWorks
 
     public static void ReplaceAllInDb(List<DiplomaWorks> daList)
     {
-        // Vorgabe im Pflichtenheft: kompletter Ersatz
-        // TRUNCATE geht NICHT wegen ForeignKey -> daher DELETE
-
         DbWrapperMySqlV2.Wrapper.RunNonQuery("DELETE FROM foa_diplomascores;");
         DbWrapperMySqlV2.Wrapper.RunNonQuery("DELETE FROM foa_diplomaworks;");
 
-        // optional: IDs wieder bei 1 starten
         DbWrapperMySqlV2.Wrapper.RunNonQuery("ALTER TABLE foa_diplomaworks AUTO_INCREMENT = 1;");
         DbWrapperMySqlV2.Wrapper.RunNonQuery("ALTER TABLE foa_diplomascores AUTO_INCREMENT = 1;");
 
