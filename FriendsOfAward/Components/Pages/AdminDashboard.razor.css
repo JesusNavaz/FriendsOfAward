@@ -1,4 +1,4 @@
-﻿/* AdminDashboard.razor.css (kurz, gleiches Design) */
+﻿/* AdminDashboard.razor.css (FIX: Buttons klickbar, kein Overlay) */
 
 :root {
     --bg: #F5F5F7;
@@ -9,23 +9,23 @@
     --border: rgba(17,24,39,.10);
     --shadow: 0 18px 46px rgba(0,0,0,.12);
     --shadow-soft: 0 10px 26px rgba(0,0,0,.10);
-    --play: #BFE6D4;
-    --stop: #F58F7C;
 }
 
+/* Layout */
 .topbar-layout {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background: var(--bg)
+    background: var(--bg);
 }
 
 .content {
     flex: 1;
     padding: 30px 44px 44px;
-    overflow-y: auto
+    overflow-y: auto;
 }
 
+/* Topbar */
 .topbar {
     margin: 20px;
     padding: 20px 22px;
@@ -36,80 +36,87 @@
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     display: grid;
-    grid-template-columns: 320px 1fr auto;
+    grid-template-columns: 320px minmax(0, 1fr) auto; /* center darf schrumpfen */
     align-items: center;
     column-gap: 20px;
-    row-gap: 16px
+    row-gap: 16px;
+    position: relative; /* stacking context */
 }
 
 .topbar-left {
     display: flex;
     flex-direction: column;
-    gap: 6px
+    gap: 6px;
 }
 
 .topbar-center {
     display: flex;
-    justify-content: center
+    justify-content: center;
+    min-width: 0;
+    overflow: hidden; /* verhindert "drüberragen" */
 }
 
+/* ✅ WICHTIG: rechter Bereich immer über allem */
 .topbar-right {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 16px
+    gap: 16px;
+    position: relative;
+    z-index: 5;
 }
 
+/* Titel */
 .topbar-title {
-    font: 900 28px/1.05 system-ui,Segoe UI,sans-serif;
+    font: 900 28px/1.05 system-ui, Segoe UI, sans-serif;
     letter-spacing: .2px;
-    color: var(--text)
+    color: var(--text);
 }
 
-.topbar-subtitle {
-    font-size: 14px;
-    font-weight: 800;
-    color: var(--muted)
-}
-
+/* Voting */
 .voting-status-display {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 14px;
     padding: 16px 18px;
     border-radius: 999px;
-    min-width: 520px;
+    width: 100%;
+    max-width: 520px;
+    min-width: 0;
     background: rgba(255,255,255,.86);
     border: 1px solid var(--border);
-    box-shadow: var(--shadow-soft)
+    box-shadow: var(--shadow-soft);
+    /* ✅ WICHTIG: blockiert keine Klicks mehr */
+    pointer-events: none;
 }
 
+    /* optional: Status-Farben bleiben sichtbar */
     .voting-status-display.active {
         border-color: rgba(191,230,212,.70);
-        background: rgba(191,230,212,.24)
+        background: rgba(191,230,212,.24);
     }
 
     .voting-status-display.paused {
         border-color: rgba(245,143,124,.60);
-        background: rgba(245,143,124,.20)
+        background: rgba(245,143,124,.20);
     }
 
 .status-icon {
-    font-size: 26px
+    font-size: 26px;
 }
 
 .status-content {
     display: flex;
     align-items: center;
-    gap: 14px
+    gap: 14px;
 }
 
 .status-text {
     font-size: 16px;
     font-weight: 900;
     color: var(--text);
-    opacity: .9
+    opacity: .9;
 }
 
 .status-time {
@@ -120,13 +127,14 @@
     border-radius: 999px;
     background: rgba(255,255,255,.96);
     border: 1px solid var(--border);
-    color: var(--text)
+    color: var(--text);
 }
 
+/* Buttons */
 .vote-actions, .topbar-nav {
     display: flex;
     align-items: center;
-    gap: 12px
+    gap: 12px;
 }
 
 .vote-icon-btn, .nav-btn {
@@ -134,20 +142,24 @@
     background: var(--surface-strong);
     box-shadow: var(--shadow-soft);
     cursor: pointer;
-    transition: transform .10s ease,filter .15s ease,box-shadow .15s ease
+    transition: transform .10s ease, filter .15s ease, box-shadow .15s ease;
+    /* ✅ sicher klickbar */
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
 }
 
     .vote-icon-btn:hover, .nav-btn:hover {
         filter: brightness(1.02);
-        box-shadow: 0 14px 34px rgba(0,0,0,.12)
+        box-shadow: 0 14px 34px rgba(0,0,0,.12);
     }
 
     .vote-icon-btn:active {
-        transform: scale(.98)
+        transform: scale(.98);
     }
 
     .nav-btn:hover {
-        transform: translateY(-1px)
+        transform: translateY(-1px);
     }
 
 .vote-icon-btn {
@@ -159,26 +171,25 @@
     justify-content: center;
     font-weight: 900;
     font-size: 22px;
-    transition: transform .08s ease,filter .15s ease,box-shadow .15s ease
 }
 
 .vote-start {
-    background: linear-gradient(180deg,rgba(191,230,212,.98),rgba(191,230,212,.78));
+    background: linear-gradient(180deg, rgba(191,230,212,.98), rgba(191,230,212,.78));
     border-color: rgba(191,230,212,.92);
-    color: #1f2f27
+    color: #1f2f27;
 }
 
     .vote-start:disabled {
         opacity: .55;
         cursor: not-allowed;
         box-shadow: none;
-        transform: none
+        transform: none;
     }
 
 .vote-reset {
-    background: linear-gradient(180deg,rgba(245,143,124,.98),rgba(245,143,124,.78));
+    background: linear-gradient(180deg, rgba(245,143,124,.98), rgba(245,143,124,.78));
     border-color: rgba(245,143,124,.88);
-    color: #3a1c17
+    color: #3a1c17;
 }
 
 .nav-btn {
@@ -187,33 +198,34 @@
     color: var(--text);
     font-weight: 900;
     font-size: 16px;
-    white-space: nowrap
+    white-space: nowrap;
 }
 
     .nav-btn.active {
         border-color: rgba(245,143,124,.60);
-        box-shadow: 0 14px 34px rgba(245,143,124,.16)
+        box-shadow: 0 14px 34px rgba(245,143,124,.16);
     }
 
+/* Content */
 .dashboard-title {
     font-size: 34px;
     font-weight: 900;
     color: var(--text);
-    margin: 0 0 8px
+    margin: 0 0 8px;
 }
 
 .dashboard-subtitle {
     font-size: 16px;
     font-weight: 700;
     color: var(--muted);
-    margin: 0 0 26px
+    margin: 0 0 26px;
 }
 
 .score-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 18px;
-    margin-bottom: 30px
+    margin-bottom: 30px;
 }
 
 .score-card {
@@ -222,52 +234,52 @@
     border-radius: 20px;
     padding: 20px;
     box-shadow: var(--shadow-soft);
-    transition: transform .12s ease,box-shadow .15s ease;
+    transition: transform .12s ease, box-shadow .15s ease;
     position: relative;
-    overflow: hidden
+    overflow: hidden;
 }
 
     .score-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 18px 46px rgba(0,0,0,.12)
+        box-shadow: 0 18px 46px rgba(0,0,0,.12);
     }
 
     .score-card h2 {
         font-size: 20px;
         font-weight: 900;
         color: var(--text);
-        margin: 0 0 6px
+        margin: 0 0 6px;
     }
 
 .project-name {
     color: var(--muted);
-    font-weight: 700
+    font-weight: 700;
 }
 
 .score {
     font-size: 30px;
     font-weight: 900;
     color: var(--text);
-    margin-top: 10px
+    margin-top: 10px;
 }
 
 .points-label {
     font-size: 14px;
     font-weight: 800;
-    color: var(--muted)
+    color: var(--muted);
 }
 
 .stars {
     margin-top: 10px;
     font-size: 15px;
-    color: var(--muted)
+    color: var(--muted);
 }
 
 .diploma-table-section h2 {
     font-size: 22px;
     font-weight: 900;
     color: var(--text);
-    margin: 0 0 14px
+    margin: 0 0 14px;
 }
 
 .diploma-table {
@@ -277,11 +289,11 @@
     border: 1px solid var(--border);
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: var(--shadow-soft)
+    box-shadow: var(--shadow-soft);
 }
 
     .diploma-table thead {
-        background: rgba(17,24,39,.05)
+        background: rgba(17,24,39,.05);
     }
 
     .diploma-table th, .diploma-table td {
@@ -289,47 +301,46 @@
         text-align: left;
         color: var(--text);
         font-size: 15px;
-        font-weight: 700
+        font-weight: 700;
     }
 
     .diploma-table th {
-        font-weight: 900
+        font-weight: 900;
     }
 
     .diploma-table tbody tr:nth-child(even) {
-        background: rgba(17,24,39,.03)
+        background: rgba(17,24,39,.03);
     }
 
     .diploma-table tbody tr:hover {
-        background: rgba(245,143,124,.14)
+        background: rgba(245,143,124,.14);
     }
 
 @media (max-width:1180px) {
     .topbar {
-        grid-template-columns: 1fr
+        grid-template-columns: 1fr;
     }
 
     .topbar-center {
-        justify-content: flex-start
+        justify-content: flex-start;
     }
 
     .voting-status-display {
-        min-width: unset;
-        width: 100%
+        max-width: none;
     }
 
     .topbar-right {
         justify-content: space-between;
-        flex-wrap: wrap
+        flex-wrap: wrap;
     }
 
     .topbar-nav {
         width: 100%;
         justify-content: flex-start;
-        flex-wrap: wrap
+        flex-wrap: wrap;
     }
 
     .content {
-        padding: 22px
+        padding: 22px;
     }
 }
