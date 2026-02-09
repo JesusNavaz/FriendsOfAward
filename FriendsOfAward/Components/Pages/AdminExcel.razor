@@ -4,27 +4,32 @@
 @using ClassLibrary
 @using Microsoft.AspNetCore.Components.Forms
 @inject IJSRuntime JS
+<AuthorizeView>
+    <Authorized>
+        <h1>Admin: Excel Import/Export</h1>
 
-<h1>Admin: Excel Import/Export</h1>
+        @if (message != "")
+        {
+            <p class="msg">@message</p>
+        }
 
-@if (message != "")
-{
-    <p class="msg">@message</p>
-}
+        <h3>Import Diplomarbeiten (ersetzt DB)</h3>
 
-<h3>Import Diplomarbeiten (ersetzt DB)</h3>
+        <p>
+            <InputFile OnChange="OnFileSelected" accept=".xlsx" />
+            <button class="btn" @onclick="Btn_ImportExcel" disabled="@(!canImport)">Import starten</button>
+        </p>
 
-<p>
-    <InputFile OnChange="OnFileSelected" accept=".xlsx" />
-    <button class="btn" @onclick="Btn_ImportExcel" disabled="@(!canImport)">Import starten</button>
-</p>
+        <h3>Export Auswertung</h3>
 
-<h3>Export Auswertung</h3>
-
-<p>
-    <button class="btn" @onclick="Btn_ExportExcel">Excel herunterladen</button>
-</p>
-
+        <p>
+            <button class="btn" @onclick="Btn_ExportExcel">Excel herunterladen</button>
+        </p>
+    </Authorized>
+    <NotAuthorized>
+        <p>Nicht eingeloggt. <a href="/Admin">Zum Login</a></p>
+    </NotAuthorized>
+</AuthorizeView>
 @code
 {
     private IBrowserFile? selectedFile = null;

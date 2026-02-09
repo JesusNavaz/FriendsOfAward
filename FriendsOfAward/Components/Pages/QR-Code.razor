@@ -1,33 +1,39 @@
-﻿@page "/"
+﻿@page "/QR-Code"
 @using ClassLibrary
 @rendermode InteractiveServer
 
-<div class="page-background">
-    <div class="qr-container">
+<AuthorizeView>
+    <Authorized>
+        <div class="page-background">
+            <div class="qr-container">
 
-        <h3>QR-Code</h3>
+                <h3>QR-Code</h3>
 
-        <p class="small-note">
-            Scanne den Code und vote für die beste Diplomarbeit
-        </p>
+                <p class="small-note">
+                    Scanne den Code und vote für die beste Diplomarbeit
+                </p>
 
-        <button class="qr-button" @onclick="GenerateQrCode">
-            QR-Code erzeugen
-        </button>
+                <button class="qr-button" @onclick="GenerateQrCode">
+                    QR-Code erzeugen
+                </button>
 
-        @if (!string.IsNullOrEmpty(QrCodeImage))
-        {
-            <img class="qr-image" src="@QrCodeImage" alt="QR-Code" />
-        }
+                @if (!string.IsNullOrEmpty(QrCodeImage))
+                {
+                    <img class="qr-image" src="@QrCodeImage" alt="QR-Code" />
+                }
 
-        @if (!string.IsNullOrEmpty(Message))
-        {
-            <span class="error">@Message</span>
-        }
+                @if (!string.IsNullOrEmpty(Message))
+                {
+                    <span class="error">@Message</span>
+                }
 
-    </div>
-</div>
-
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>Nicht eingeloggt. <a href="/Admin">Zum Login</a></p>
+    </NotAuthorized>
+</AuthorizeView>
 @code {
     private string? QrCodeImage;
     private string? Message;
