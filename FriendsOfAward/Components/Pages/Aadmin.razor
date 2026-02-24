@@ -60,7 +60,7 @@
             IsAdmin = true;
             error = "";
 
-            // Auth Provider Login
+            
             var authProvider = (MyCustomAuthStateProvider)AuthProvider;
             authProvider.Login(adminEmail);
 
@@ -78,7 +78,6 @@
         adminEmail = "";
         adminPassword = "";
 
-        // Auth Provider Logout
         var authProvider = (MyCustomAuthStateProvider)AuthProvider;
         authProvider.Logout();
 

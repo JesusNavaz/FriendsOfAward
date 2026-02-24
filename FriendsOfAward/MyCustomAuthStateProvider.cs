@@ -7,7 +7,7 @@ namespace FriendsOfAward
     public class MyCustomAuthStateProvider : AuthenticationStateProvider
     {
         private static ClaimsPrincipal _anonymous = new(new ClaimsIdentity());
-        // _anonymous - falls _currentUser null ist
+      
         private static ClaimsPrincipal? _currentUser = null;
 
 
@@ -20,7 +20,7 @@ namespace FriendsOfAward
         public void Login(string username)
         {
             ClaimsIdentity identity = new([new Claim(ClaimTypes.Name, username)],
-                    "MyCustomAuthType");  // von SPAA erfunden, keiner der Standardtypen
+                    "MyCustomAuthType");  
 
             _currentUser = new ClaimsPrincipal(identity);
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());

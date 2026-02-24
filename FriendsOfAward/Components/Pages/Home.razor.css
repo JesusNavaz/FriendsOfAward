@@ -140,7 +140,7 @@ h1 {
         font-size: 12px;
     }
 
-    /* 4 Spalten auch auf dem Handy */
+   
     .vote-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 8px;
@@ -148,7 +148,7 @@ h1 {
         padding: 0 6px;
     }
 
-    /* Kästchen deutlich kleiner */
+    
     .vote-button {
         width: 100%;
         height: 52px;

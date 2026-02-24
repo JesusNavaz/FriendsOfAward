@@ -1,4 +1,4 @@
-﻿/* Admin.razor.css – neues Design nur per CSS */
+﻿
 
 .admin-container {
     min-height: 100vh;
@@ -10,7 +10,7 @@
     overflow: hidden;
 }
 
-    /* Deko-Hintergrund */
+    
     .admin-container::before,
     .admin-container::after {
         content: "";
@@ -50,7 +50,7 @@
     z-index: 1;
 }
 
-/* Card */
+
 .admin-card {
     width: 100%;
     max-width: 460px;
@@ -83,7 +83,7 @@
         margin-top: 4px;
     }
 
-/* Inputs */
+
 .admin-input {
     height: 46px;
     border: 1px solid #dbe3ef;
@@ -101,7 +101,7 @@
         box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
     }
 
-/* Fehlermeldung */
+
 .admin-error {
     margin: 4px 0 0;
     color: #dc2626;
@@ -113,7 +113,7 @@
     padding: 8px 10px;
 }
 
-/* Buttons (Basis) */
+
 .admin-btn {
     margin-top: 8px;
     height: 48px;
@@ -134,21 +134,21 @@
         transform: translateY(1px) scale(0.995);
     }
 
-/* Login-Button BLAU */
+
 .admin-login {
     background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
     color: #fff;
     box-shadow: 0 10px 22px rgba(37, 99, 235, 0.28);
 }
 
-/* Logout-Button */
+
 .admin-logout {
     background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
     color: #fff;
     box-shadow: 0 10px 20px rgba(220, 38, 38, 0.22);
 }
 
-/* Eingeloggt-Info */
+
 .admin-info {
     margin: 4px 0 8px;
     padding: 10px 12px;
@@ -159,7 +159,7 @@
     font-weight: 600;
 }
 
-/* Link zum Dashboard hübscher */
+
 .admin-card a {
     display: inline-block;
     margin-top: 4px;
@@ -173,7 +173,7 @@
         text-decoration: underline;
     }
 
-/* Mobile */
+
 @media (max-width: 520px) {
     .admin-title {
         top: 50px;

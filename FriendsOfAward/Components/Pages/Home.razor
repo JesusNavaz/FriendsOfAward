@@ -162,7 +162,7 @@
             return;
         }
 
-        // wenn der Button ein Favorit war, entfernen (damit nicht doppelt gezählt)
+        
         Favoriten.Remove(no);
 
         Superfavorit = no;
@@ -178,7 +178,7 @@
                 return;
             }
 
-            // Diese Methode addiert Punkte in foa_diplomascores und sperrt den Token.
+            
             VoteService.SubmitVotes(token, Favoriten, Superfavorit);
 
             Message = "Bewertung erfolgreich gespeichert!";
