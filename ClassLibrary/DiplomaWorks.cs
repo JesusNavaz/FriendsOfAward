@@ -56,4 +56,16 @@ public class DiplomaWorks
             return false;
         }
     }
+    public static void ClearDb(bool alsoClearScores = true)
+    {
+        if (alsoClearScores)
+            DbWrapperMySqlV2.Wrapper.RunNonQuery("DELETE FROM foa_diplomascores;");
+
+        DbWrapperMySqlV2.Wrapper.RunNonQuery("DELETE FROM foa_diplomaworks;");
+
+        DbWrapperMySqlV2.Wrapper.RunNonQuery("ALTER TABLE foa_diplomaworks AUTO_INCREMENT = 1;");
+
+        if (alsoClearScores)
+            DbWrapperMySqlV2.Wrapper.RunNonQuery("ALTER TABLE foa_diplomascores AUTO_INCREMENT = 1;");
+    }
 }

@@ -1,6 +1,6 @@
 using FriendsOfAward.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-
+using ClassLibrary;
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -29,6 +29,10 @@ var app = builder.Build();
 
 app.UseSession();
 
+if (app.Environment.IsDevelopment())
+{
+    DiplomaWorks.ClearDb(alsoClearScores: true);
+}
 
 if (!app.Environment.IsDevelopment())
 {
