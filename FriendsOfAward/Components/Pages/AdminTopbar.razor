@@ -1,0 +1,31 @@
+﻿@inject NavigationManager Navigation
+
+<header class="topbar">
+    <div class="topbar-left">
+        <div class="topbar-title">ADMIN PANEL</div>
+    </div>
+
+    <div class="topbar-right">
+        <nav class="topbar-nav">
+            <button type="button"
+                    class="nav-btn @(CurrentPage == "dashboard" ? "active" : "")"
+                    @onclick='() => Navigation.NavigateTo("/AdminDashboard")'>
+                Dashboard
+            </button>
+            <button type="button"
+                    class="nav-btn @(CurrentPage == "qr" ? "active" : "")"
+                    @onclick='() => Navigation.NavigateTo("/QR-Code")'>
+                QR Codes
+            </button>
+            <button type="button"
+                    class="nav-btn @(CurrentPage == "excel" ? "active" : "")"
+                    @onclick='() => Navigation.NavigateTo("/AdminDashboard/Excel")'>
+                Excel
+            </button>
+        </nav>
+    </div>
+</header>
+
+@code {
+    [Parameter] public string CurrentPage { get; set; } = "";
+}
