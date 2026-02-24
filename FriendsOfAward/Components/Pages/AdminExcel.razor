@@ -1,35 +1,42 @@
 ﻿@page "/AdminDashboard/Excel"
 @rendermode InteractiveServer
-
 @using ClassLibrary
 @using Microsoft.AspNetCore.Components.Forms
 @inject IJSRuntime JS
+
 <AuthorizeView>
     <Authorized>
-        <h1>Admin: Excel Import/Export</h1>
+        <div class="admin-container topbar-layout">
 
-        @if (message != "")
-        {
-            <p class="msg">@message</p>
-        }
+            <AdminTopbar CurrentPage="excel" />
 
-        <h3>Import Diplomarbeiten (ersetzt DB)</h3>
+            <main class="content">
+                <h1 class="dashboard-title">Excel Import / Export</h1>
 
-        <p>
-            <InputFile OnChange="OnFileSelected" accept=".xlsx" />
-            <button class="btn" @onclick="Btn_ImportExcel" disabled="@(!canImport)">Import starten</button>
-        </p>
+                @if (message != "")
+                {
+                    <p class="msg">@message</p>
+                }
 
-        <h3>Export Auswertung</h3>
+                <h3>Import Diplomarbeiten (ersetzt DB)</h3>
+                <p>
+                    <InputFile OnChange="OnFileSelected" accept=".xlsx" />
+                    <button class="btn" @onclick="Btn_ImportExcel" disabled="@(!canImport)">Import starten</button>
+                </p>
 
-        <p>
-            <button class="btn" @onclick="Btn_ExportExcel">Excel herunterladen</button>
-        </p>
+                <h3>Export Auswertung</h3>
+                <p>
+                    <button class="btn" @onclick="Btn_ExportExcel">Excel herunterladen</button>
+                </p>
+            </main>
+
+        </div>
     </Authorized>
     <NotAuthorized>
         <p>Nicht eingeloggt. <a href="/Admin">Zum Login</a></p>
     </NotAuthorized>
 </AuthorizeView>
+
 @code
 {
     private IBrowserFile? selectedFile = null;
@@ -45,41 +52,26 @@
     private async Task Btn_ImportExcel()
     {
         message = "";
-
-        if (selectedFile == null)
-        {
-            message = "Keine Datei ausgewählt.";
-            return;
-        }
-
+        if (selectedFile == null) { message = "Keine Datei ausgewählt."; return; }
         try
         {
             using var stream = selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
             await ExcelService.ImportDiplomaWorksAsync(stream);
-
             message = "Import OK (DB wurde ersetzt).";
         }
-        catch (Exception ex)
-        {
-            message = $"Import-Fehler: {ex.Message}";
-        }
+        catch (Exception ex) { message = $"Import-Fehler: {ex.Message}"; }
     }
 
     private async Task Btn_ExportExcel()
     {
         message = "";
-
         try
         {
             byte[] bytes = ExcelService.ExportResultsToExcel();
             string base64 = Convert.ToBase64String(bytes);
             await JS.InvokeVoidAsync("saveAsFile", "FoA_Auswertung.xlsx", base64);
-
             message = "Export OK (Download gestartet).";
         }
-        catch (Exception ex)
-        {
-            message = $"Export-Fehler: {ex.Message}";
-        }
+        catch (Exception ex) { message = $"Export-Fehler: {ex.Message}"; }
     }
 }

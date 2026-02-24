@@ -4,40 +4,48 @@
 
 <AuthorizeView>
     <Authorized>
-        <div class="page-background">
-            <div class="qr-container">
+        <div class="admin-container topbar-layout">
 
-                <h3>QR-Code</h3>
+            <AdminTopbar CurrentPage="qr" />
 
-                <p class="small-note">
-                    Scanne den Code und vote für die beste Diplomarbeit
-                </p>
+            <main class="content">
+                <div class="page-background">
+                    <div class="qr-container">
 
-                <button class="qr-button" @onclick="GenerateQrCode">
-                    QR-Code erzeugen
-                </button>
+                        <h3>QR-Code</h3>
 
-                @if (!string.IsNullOrEmpty(QrCodeImage))
-                {
-                    <img class="qr-image" src="@QrCodeImage" alt="QR-Code" />
-                }
+                        <p class="small-note">
+                            Scanne den Code und vote für die beste Diplomarbeit
+                        </p>
 
-                @if (!string.IsNullOrEmpty(Message))
-                {
-                    <span class="error">@Message</span>
-                }
+                        <button class="qr-button" @onclick="GenerateQrCode">
+                            QR-Code erzeugen
+                        </button>
 
-            </div>
+                        @if (!string.IsNullOrEmpty(QrCodeImage))
+                        {
+                            <img class="qr-image" src="@QrCodeImage" alt="QR-Code" />
+                        }
+
+                        @if (!string.IsNullOrEmpty(Message))
+                        {
+                            <span class="error">@Message</span>
+                        }
+
+                    </div>
+                </div>
+            </main>
+
         </div>
     </Authorized>
     <NotAuthorized>
         <p>Nicht eingeloggt. <a href="/Admin">Zum Login</a></p>
     </NotAuthorized>
 </AuthorizeView>
+
 @code {
     private string? QrCodeImage;
     private string? Message;
-
 
     private const string BaseUrl = "http://172.17.10.91:5432/vote/";
 
@@ -45,10 +53,7 @@
     {
         try
         {
-            // 1️⃣ Einmaliger Token
             string token = Guid.NewGuid().ToString();
-
-            // 2️⃣ URL für Voting
             string payload = $"http://172.17.10.91:5432/vote/{token}";
 
             using var generator = new QRCoder.QRCodeGenerator();
@@ -58,7 +63,6 @@
             byte[] qrBytes = qrCode.GetGraphic(20);
             QrCodeImage = $"data:image/png;base64,{Convert.ToBase64String(qrBytes)}";
 
-            // In Datenbank speichern
             var qrCodeEntry = new QrCode(token.ToString().Substring(0, 8));
             QrCode.SaveQRtoDb(new List<QrCode> { qrCodeEntry });
 
