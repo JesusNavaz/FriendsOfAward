@@ -61,13 +61,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Testprojekt</td>
-                                <td>30</td>
-                                <td>10</td>
-                                <td>3</td>
-                            </tr>
+                            @foreach (var r in rows)
+                            {
+                                <tr>
+                                    <td>@r.WorkNo</td>
+                                    <td>@r.Title</td>
+                                    <td>@r.Points</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </section>
@@ -89,6 +92,13 @@
 
     private System.Threading.Timer? timer;
     private DateTime endUtc;
+
+    private List<DashboardRow> rows = new();
+
+    protected override void OnInitialized()
+    {
+        rows = VoteService.GetDashboardRows();
+    }
 
     private void Btn_StartVoting()
     {
