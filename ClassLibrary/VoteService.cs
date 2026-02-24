@@ -1,6 +1,7 @@
 ﻿using ClassLibrary;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 public static class VoteService
 {
@@ -37,5 +38,34 @@ public static class VoteService
         }
 
         QrCode.MarkAsUsed(token);
+    }
+
+    public static List<DashboardRow> GetDashboardRows()
+    {
+        string sql = @"
+        SELECT
+            w.work_no AS WorkNo,
+            w.title   AS Title,
+            COALESCE(s.points, 0) AS Points
+        FROM foa_diplomaworks w
+        LEFT JOIN foa_diplomascores s
+            ON s.diploma_work_id = w.id
+        ORDER BY Points DESC, w.work_no ASC;
+    ";
+
+        DataTable dt = DbWrapperMySqlV2.Wrapper.RunQuery(sql);
+
+        var list = new List<DashboardRow>();
+        foreach (DataRow row in dt.Rows)
+        {
+            list.Add(new DashboardRow
+            {
+                WorkNo = Convert.ToInt32(row["WorkNo"]),
+                Title = Convert.ToString(row["Title"]) ?? "",
+                Points = Convert.ToInt32(row["Points"])
+            });
+        }
+
+        return list;
     }
 }
